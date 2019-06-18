@@ -14,6 +14,10 @@ func (*Service) Schema() []byte {
 type User {
 	name: String!
 }
+
+extend type Query {
+	User(id: String!): User
+}
 `)
 }
 

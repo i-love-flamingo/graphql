@@ -42,3 +42,9 @@ type Module struct{}
 func (*Module) Configure(injector *dingo.Injector) {
 	injector.BindMulti(new(graphql.Service)).To(new(Service))
 }
+
+func (*Module) Depends() []dingo.Module {
+	return []dingo.Module{
+		new(graphql.Module),
+	}
+}

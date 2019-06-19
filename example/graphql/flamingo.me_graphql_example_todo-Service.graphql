@@ -1,0 +1,8 @@
+
+type Todo {
+	task: String!
+}
+
+extend type User {
+	todos: [Todo]
+}

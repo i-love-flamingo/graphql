@@ -1,6 +1,8 @@
 package user
 
 import (
+	"context"
+
 	"flamingo.me/dingo"
 	"flamingo.me/graphql"
 	"github.com/99designs/gqlgen/codegen/config"
@@ -23,6 +25,10 @@ extend type Query {
 
 type User struct {
 	Name string
+}
+
+type UserService interface {
+	UserByID(ctx context.Context, id string) (*User, error)
 }
 
 func (*Service) Models() map[string]config.TypeMapEntry {

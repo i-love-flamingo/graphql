@@ -1,6 +1,6 @@
 package main
 
-//go:generate go run main.go graphql
+//go:generate go run -tags graphql main.go graphql
 
 import (
 	"flamingo.me/dingo"

@@ -1,6 +1,8 @@
 package todo
 
 import (
+	"context"
+
 	"flamingo.me/dingo"
 	"flamingo.me/graphql"
 	"flamingo.me/graphql/example/user"
@@ -13,6 +15,7 @@ func (*Service) Schema() []byte {
 	// language=graphql
 	return []byte(`
 type Todo {
+	id: ID
 	task: String!
 }
 
@@ -23,6 +26,7 @@ extend type User {
 }
 
 type Todo struct {
+	ID   string
 	Task string
 }
 
@@ -43,4 +47,14 @@ func (*Module) Depends() []dingo.Module {
 		new(graphql.Module),
 		new(user.Module),
 	}
+}
+
+type TodoService struct{}
+
+func (ts *TodoService) Todos(ctx context.Context, userid string) ([]*Todo, error) {
+	return []*Todo{
+		{Task: "a" + userid},
+		{Task: "b" + userid},
+		{Task: "c" + userid},
+	}, nil
 }

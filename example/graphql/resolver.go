@@ -1,16 +1,25 @@
+//+build !graphql
+
 package graphql
 
 import (
-	"context"
-
 	"flamingo.me/graphql"
 	"flamingo.me/graphql/example/todo"
-	"flamingo.me/graphql/example/user"
+	usergraphql "flamingo.me/graphql/example/user/interfaces/graphql"
 )
 
+// this file is a starting point for the project specific resolvers
+// it will not be regenerated!
+
 type rootResolver struct {
-	queryResolver *queryResolver
-	userResolver  *userResolver
+	todoUserResolver *todo.TodoUserResolver
+	queryResolver    *queryResolver
+}
+
+func (r *rootResolver) Inject(todoUserResolver *todo.TodoUserResolver, queryResolver *queryResolver) *rootResolver {
+	r.todoUserResolver = todoUserResolver
+	r.queryResolver = queryResolver
+	return r
 }
 
 var _ ResolverRoot = new(rootResolver)
@@ -20,29 +29,16 @@ func (r *rootResolver) Query() QueryResolver {
 }
 
 func (r *rootResolver) User() UserResolver {
-	return r.userResolver
+	return r.todoUserResolver
 }
 
 type queryResolver struct {
-	userService user.UserService
+	*graphql.FlamingoQueryResolver
+	*usergraphql.UserQueryResolver
 }
 
-var _ QueryResolver = new(queryResolver)
-
-func (r *queryResolver) Inject(userService user.UserService) {
-	r.userService = userService
-}
-
-func (*queryResolver) Flamingo(ctx context.Context) (*string, error) {
-	return graphql.FlamingoResolver(ctx)
-}
-
-func (r *queryResolver) User(ctx context.Context, id string) (*user.User, error) {
-	return r.userService.UserByID(ctx, id)
-}
-
-type userResolver struct{}
-
-func (*userResolver) Todos(ctx context.Context, obj *user.User) ([]*todo.Todo, error) {
-	return nil, nil
+func (r *queryResolver) Inject(flamingoQueryResolver *graphql.FlamingoQueryResolver, userQueryResolver *usergraphql.UserQueryResolver) *queryResolver {
+	r.FlamingoQueryResolver = flamingoQueryResolver
+	r.UserQueryResolver = userQueryResolver
+	return r
 }

@@ -1,5 +1,6 @@
 
 type Todo {
+	id: ID
 	task: String!
 }
 

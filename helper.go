@@ -14,15 +14,39 @@ type ModelMap map[string]interface{}
 func (m ModelMap) Models() map[string]config.TypeMapEntry {
 	res := make(map[string]config.TypeMapEntry, len(m))
 	for k, v := range m {
-		v := reflect.TypeOf(v)
-		if v.Kind() == reflect.Ptr {
-			v = v.Elem()
-		}
-		res[k] = config.TypeMapEntry{
-			Model: []string{v.PkgPath() + "." + v.Name()},
+		switch v := v.(type) {
+		case ModelMapEntry:
+			t := reflect.TypeOf(v.Type)
+			if t.Kind() == reflect.Ptr {
+				t = t.Elem()
+			}
+
+			fields := make(map[string]config.TypeMapField, len(v.Fields))
+			for k, v := range v.Fields {
+				fields[k] = config.TypeMapField{FieldName: v}
+			}
+
+			res[k] = config.TypeMapEntry{
+				Model:  []string{t.PkgPath() + "." + t.Name()},
+				Fields: fields,
+			}
+
+		default:
+			t := reflect.TypeOf(v)
+			if t.Kind() == reflect.Ptr {
+				t = t.Elem()
+			}
+			res[k] = config.TypeMapEntry{
+				Model: []string{t.PkgPath() + "." + t.Name()},
+			}
 		}
 	}
 	return res
+}
+
+type ModelMapEntry struct {
+	Type   interface{}
+	Fields map[string]string
 }
 
 type FlamingoQueryResolver struct{}

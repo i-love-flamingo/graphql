@@ -26,7 +26,8 @@ func command(
 				return err
 			}
 
-			if err := ioutil.WriteFile("graphql/schema.graphql", []byte(`type Query { flamingo: String }`), 0644); err != nil {
+			if err := ioutil.WriteFile("graphql/schema.graphql", []byte(`type Query { flamingo: String }
+scalar Time`), 0644); err != nil {
 				return err
 			}
 

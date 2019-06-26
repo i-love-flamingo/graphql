@@ -15,6 +15,9 @@ func (m ModelMap) Models() map[string]config.TypeMapEntry {
 	res := make(map[string]config.TypeMapEntry, len(m))
 	for k, v := range m {
 		v := reflect.TypeOf(v)
+		if v.Kind() == reflect.Ptr {
+			v = v.Elem()
+		}
 		res[k] = config.TypeMapEntry{
 			Model: []string{v.PkgPath() + "." + v.Name()},
 		}

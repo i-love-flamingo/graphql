@@ -89,6 +89,10 @@ type queryResolver struct{}
 				}
 			}
 
+			float := cfg.Models["Float"]
+			float.Model = append(float.Model, "flamingo.me/graphql.Float", "github.com/99designs/gqlgen/graphql.Float")
+			cfg.Models["Float"] = float
+
 			cfg.Model = config.PackageConfig{Filename: "graphql/models_gen.go"}
 			cfg.Exec = config.PackageConfig{Filename: "graphql/generated.go"}
 

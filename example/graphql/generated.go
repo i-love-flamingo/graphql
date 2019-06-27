@@ -6,10 +6,12 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"math/big"
 	"strconv"
 	"sync"
 	"sync/atomic"
 
+	graphql1 "flamingo.me/graphql"
 	"flamingo.me/graphql/example/todo"
 	"flamingo.me/graphql/example/user/domain"
 	"github.com/99designs/gqlgen/graphql"
@@ -50,8 +52,10 @@ type ComplexityRoot struct {
 	}
 
 	Todo struct {
-		ID   func(childComplexity int) int
-		Task func(childComplexity int) int
+		ID      func(childComplexity int) int
+		Points  func(childComplexity int) int
+		Points2 func(childComplexity int) int
+		Task    func(childComplexity int) int
 	}
 
 	User struct {
@@ -108,6 +112,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Todo.ID(childComplexity), true
+
+	case "Todo.points":
+		if e.complexity.Todo.Points == nil {
+			break
+		}
+
+		return e.complexity.Todo.Points(childComplexity), true
+
+	case "Todo.points2":
+		if e.complexity.Todo.Points2 == nil {
+			break
+		}
+
+		return e.complexity.Todo.Points2(childComplexity), true
 
 	case "Todo.task":
 		if e.complexity.Todo.Task == nil {
@@ -198,6 +216,8 @@ var parsedSchema = gqlparser.MustLoadSchema(
 type Todo {
 	id: ID
 	task: String!
+	points: Float
+	points2: Float
 }
 
 extend type User {
@@ -212,7 +232,9 @@ extend type Query {
     User(id: String!): User
 }
 `},
-	&ast.Source{Name: "graphql/schema.graphql", Input: `type Query { flamingo: String }`},
+	&ast.Source{Name: "graphql/schema.graphql", Input: `type Query { flamingo: String }
+scalar Time
+scalar Map`},
 )
 
 // endregion ************************** generated!.gotpl **************************
@@ -438,6 +460,54 @@ func (ec *executionContext) _Todo_task(ctx context.Context, field graphql.Collec
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Todo_points(ctx context.Context, field graphql.CollectedField, obj *todo.Todo) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Todo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Points, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*big.Float)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOFloat2ᚖmathᚋbigᚐFloat(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Todo_points2(ctx context.Context, field graphql.CollectedField, obj *todo.Todo) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Todo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Points2, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOFloat2float64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *domain.User) graphql.Marshaler {
@@ -1400,6 +1470,10 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "points":
+			out.Values[i] = ec._Todo_points(ctx, field, obj)
+		case "points2":
+			out.Values[i] = ec._Todo_points2(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1969,6 +2043,37 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 		return graphql.Null
 	}
 	return ec.marshalOBoolean2bool(ctx, sel, *v)
+}
+
+func (ec *executionContext) unmarshalOFloat2float64(ctx context.Context, v interface{}) (float64, error) {
+	return graphql.UnmarshalFloat(v)
+}
+
+func (ec *executionContext) marshalOFloat2float64(ctx context.Context, sel ast.SelectionSet, v float64) graphql.Marshaler {
+	return graphql.MarshalFloat(v)
+}
+
+func (ec *executionContext) unmarshalOFloat2mathᚋbigᚐFloat(ctx context.Context, v interface{}) (big.Float, error) {
+	return graphql1.UnmarshalFloat(v)
+}
+
+func (ec *executionContext) marshalOFloat2mathᚋbigᚐFloat(ctx context.Context, sel ast.SelectionSet, v big.Float) graphql.Marshaler {
+	return graphql1.MarshalFloat(v)
+}
+
+func (ec *executionContext) unmarshalOFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, v interface{}) (*big.Float, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalOFloat2mathᚋbigᚐFloat(ctx, v)
+	return &res, err
+}
+
+func (ec *executionContext) marshalOFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, sel ast.SelectionSet, v *big.Float) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec.marshalOFloat2mathᚋbigᚐFloat(ctx, sel, *v)
 }
 
 func (ec *executionContext) unmarshalOID2string(ctx context.Context, v interface{}) (string, error) {

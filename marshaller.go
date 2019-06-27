@@ -12,7 +12,7 @@ import (
 // MarshalFloat for graphql Float scalars to be compatible with big.Float
 func MarshalFloat(f big.Float) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
-		fmt.Fprintf(w, "%q", f.String())
+		io.WriteString(w, f.String())
 	})
 }
 

@@ -26,9 +26,12 @@ func command(
 				return err
 			}
 
-			if err := ioutil.WriteFile("graphql/schema.graphql", []byte(`type Query { flamingo: String }
+			if err := ioutil.WriteFile("graphql/schema.graphql", []byte(`
+type Query { flamingo: String }
+type Mutation { flamingo: String }
 scalar Time
-scalar Map`), 0644); err != nil {
+scalar Map
+`), 0644); err != nil {
 				return err
 			}
 
@@ -68,7 +71,12 @@ func (*rootResolver) Query() QueryResolver {
 	return nil
 }
 
+func (*rootResolver) Mutation() MutationResolver {
+	return nil
+}
+
 type queryResolver struct{}
+type mutationResolver struct{}
 `), 0644); err != nil {
 					return err
 				}

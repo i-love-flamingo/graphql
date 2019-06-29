@@ -40,6 +40,10 @@ func (r *routes) Inject(config *struct {
 
 // Routes definition for flamingo router
 func (r *routes) Routes(registry *web.RouterRegistry) {
+	if r.exec == nil {
+		panic("Please register a schema/module before running the server!")
+	}
+
 	registry.Route("/graphql", "graphql")
 	registry.HandleAny("graphql", web.WrapHTTPHandler(handler.GraphQL(r.exec)))
 

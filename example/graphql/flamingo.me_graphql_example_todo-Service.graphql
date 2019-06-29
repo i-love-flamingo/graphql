@@ -1,9 +1,20 @@
 
-type Todo {
+interface Task {
+	a: String
+}
+
+type Todo implements Task {
 	id: ID
 	task: String!
 	points: Float
 	points2: Float
+
+	a: String
+	b: String
+}
+
+extend interface Task {
+	b: String
 }
 
 extend type User {

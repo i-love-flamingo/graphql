@@ -15,11 +15,22 @@ type Service struct{}
 func (*Service) Schema() []byte {
 	// language=graphql
 	return []byte(`
-type Todo {
+interface Task {
+	a: String
+}
+
+type Todo implements Task {
 	id: ID
 	task: String!
 	points: Float
 	points2: Float
+
+	a: String
+	b: String
+}
+
+extend interface Task {
+	b: String
 }
 
 extend type User {
@@ -35,9 +46,18 @@ type Todo struct {
 	Points2 float64
 }
 
+type Task interface {
+	A() string
+}
+
+func (*Todo) A() string {
+	return "a"
+}
+
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
 		"Todo": Todo{},
+		"Task": new(Task),
 	}.Models()
 }
 
@@ -62,4 +82,11 @@ func (ts *TodoService) Todos(ctx context.Context, userid string) ([]*Todo, error
 		{Task: "b" + userid},
 		{Task: "c" + userid},
 	}, nil
+}
+
+type TodoResolver struct{}
+
+func (*TodoResolver) B(ctx context.Context, obj *Todo) (*string, error) {
+	s := "B"
+	return &s, nil
 }

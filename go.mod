@@ -11,5 +11,3 @@ require (
 	github.com/spf13/cobra v0.0.3
 	github.com/vektah/gqlparser v1.1.2
 )
-
-replace flamingo.me/flamingo/v3 => ../flamingo/flamingo

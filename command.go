@@ -24,7 +24,9 @@ func command(
 	services []Service,
 ) *cobra.Command {
 	return &cobra.Command{
-		Use: "graphql flamingo module",
+		Use:     "graphql flamingo module",
+		Short:   "(Re-)Generate graphql module",
+		Aliases: []string{"g"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			schemaPath := path.Join(schemaBasePath, "schema.graphql")
 
@@ -41,6 +43,10 @@ func command(
 			}
 
 			if err := ioutil.WriteFile(path.Join(basePath, "module.go"), templates.MustAsset("module.go.tpl"), 0644); err != nil {
+				return err
+			}
+
+			if err := ioutil.WriteFile(path.Join(basePath, "emptymodule.go"), templates.MustAsset("emptymodule.go.tpl"), 0644); err != nil {
 				return err
 			}
 

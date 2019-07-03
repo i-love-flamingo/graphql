@@ -2,19 +2,28 @@ package todo
 
 import (
 	"context"
+	"flamingo.me/graphql/example/todo/domain"
+	"flamingo.me/graphql/example/todo/infrastructure"
 
-	"flamingo.me/graphql/example/user/domain"
+	userDomain "flamingo.me/graphql/example/user/domain"
 )
 
-type TodoUserResolver struct {
-	todosBackend *TodoService
+type TodoResolver struct{}
+
+func (*TodoResolver) B(ctx context.Context, obj *Todo) (*string, error) {
+	s := "B"
+	return &s, nil
 }
 
-func (r *TodoUserResolver) Inject(todosBackend *TodoService) *TodoUserResolver {
+type TodoUserResolver struct {
+	todosBackend *infrastructure.TodoService
+}
+
+func (r *TodoUserResolver) Inject(todosBackend *infrastructure.TodoService) *TodoUserResolver {
 	r.todosBackend = todosBackend
 	return r
 }
 
-func (r *TodoUserResolver) Todos(ctx context.Context, obj *domain.User) ([]*Todo, error) {
+func (r *TodoUserResolver) Todos(ctx context.Context, obj *userDomain.User) ([]*domain.Todo, error) {
 	return r.todosBackend.Todos(ctx, obj.Name)
 }

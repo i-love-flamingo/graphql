@@ -261,7 +261,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var parsedSchema = gqlparser.MustLoadSchema(
-	&ast.Source{Name: "graphql/flamingo.me_graphql_example_todo-Service.graphql", Input: `
+	&ast.Source{Name: "graphql/schema/flamingo.me_graphql_example_todo-Service.graphql", Input: `
 interface Task {
 	a: String
 }
@@ -284,7 +284,7 @@ extend type User {
 	todos: [Todo]
 }
 `},
-	&ast.Source{Name: "graphql/flamingo.me_graphql_example_user_interfaces_graphql-Service.graphql", Input: `type User {
+	&ast.Source{Name: "graphql/schema/flamingo.me_graphql_example_user_interfaces_graphql-Service.graphql", Input: `type User {
     name: String!
 }
 
@@ -292,12 +292,10 @@ extend type Query {
     User(id: String!): User
 }
 `},
-	&ast.Source{Name: "graphql/schema.graphql", Input: `
-type Query { flamingo: String }
+	&ast.Source{Name: "graphql/schema/schema.graphql", Input: `type Query { flamingo: String }
 type Mutation { flamingo: String }
 scalar Time
-scalar Map
-`},
+scalar Map`},
 )
 
 // endregion ************************** generated!.gotpl **************************

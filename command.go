@@ -1,7 +1,6 @@
 package graphql
 
 import (
-	"flamingo.me/graphql/templates"
 	"io/ioutil"
 	"log"
 	"os"
@@ -9,6 +8,7 @@ import (
 	"reflect"
 	"strings"
 
+	"flamingo.me/graphql/templates"
 	"github.com/99designs/gqlgen/api"
 	"github.com/99designs/gqlgen/codegen/config"
 	"github.com/spf13/cobra"

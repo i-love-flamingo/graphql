@@ -95,7 +95,7 @@ func emptymoduleGoTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "emptymodule.go.tpl", size: 313, mode: os.FileMode(438), modTime: time.Unix(1562163068, 0)}
+	info := bindataFileInfo{name: "emptymodule.go.tpl", size: 313, mode: os.FileMode(420), modTime: time.Unix(1563362778, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -115,7 +115,7 @@ func moduleGoTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "module.go.tpl", size: 407, mode: os.FileMode(438), modTime: time.Unix(1562071640, 0)}
+	info := bindataFileInfo{name: "module.go.tpl", size: 407, mode: os.FileMode(420), modTime: time.Unix(1563362778, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -135,7 +135,7 @@ func resolverGoTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "resolver.go.tpl", size: 368, mode: os.FileMode(438), modTime: time.Unix(1562071634, 0)}
+	info := bindataFileInfo{name: "resolver.go.tpl", size: 368, mode: os.FileMode(420), modTime: time.Unix(1563362778, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -155,7 +155,7 @@ func schemaGraphql() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "schema.graphql", size: 89, mode: os.FileMode(438), modTime: time.Unix(1562071634, 0)}
+	info := bindataFileInfo{name: "schema.graphql", size: 89, mode: os.FileMode(420), modTime: time.Unix(1563362778, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

@@ -2,15 +2,15 @@ package todo
 
 import (
 	"context"
+
 	"flamingo.me/graphql/example/todo/domain"
 	"flamingo.me/graphql/example/todo/infrastructure"
-
 	userDomain "flamingo.me/graphql/example/user/domain"
 )
 
 type TodoResolver struct{}
 
-func (*TodoResolver) B(ctx context.Context, obj *Todo) (*string, error) {
+func (*TodoResolver) B(ctx context.Context, obj *domain.Todo) (*string, error) {
 	s := "B"
 	return &s, nil
 }

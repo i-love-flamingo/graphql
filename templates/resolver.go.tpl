@@ -1,3 +1,5 @@
+//+build !graphql
+
 package graphql
 
 // this file is a starting point for the project specific resolvers

@@ -4,7 +4,9 @@ package graphql
 
 import (
 	"flamingo.me/dingo"
+	flamingoConfig "flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
+	"flamingo.me/graphql/cors"
 	"github.com/99designs/gqlgen/codegen/config"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/handler"
@@ -18,7 +20,8 @@ type Service interface {
 }
 
 // Module defines the graphql entry point and binds the graphql command and routes
-type Module struct{}
+type Module struct {
+}
 
 // Configure sets up dingo
 func (*Module) Configure(injector *dingo.Injector) {
@@ -30,14 +33,17 @@ func (*Module) Configure(injector *dingo.Injector) {
 type routes struct {
 	exec          graphql.ExecutableSchema
 	reverseRouter web.ReverseRouter
+	whitelist     flamingoConfig.Slice
 }
 
 // Inject executable schema
 func (r *routes) Inject(config *struct {
-	Exec graphql.ExecutableSchema `inject:",optional"`
+	Exec      graphql.ExecutableSchema `inject:",optional"`
+	Whitelist flamingoConfig.Slice     `inject:"config:graphql.cors.whitelist"`
 }, reverseRouter web.ReverseRouter) {
 	r.exec = config.Exec
 	r.reverseRouter = reverseRouter
+	r.whitelist = config.Whitelist
 }
 
 // Routes definition for flamingo router
@@ -46,8 +52,14 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 		panic("Please register a schema/module before running the server!")
 	}
 
+	var whitelist []string
+	r.whitelist.MapInto(&whitelist)
+
+	corsHandler := cors.Handler{Whitelist: whitelist}
+
 	registry.Route("/graphql", "graphql")
-	registry.HandleAny("graphql", web.WrapHTTPHandler(handler.GraphQL(r.exec)))
+	registry.HandleOptions("graphql", web.WrapHTTPHandler(corsHandler.PreflightHandler()))
+	registry.HandleAny("graphql", web.WrapHTTPHandler(corsHandler.GqlMiddleware(handler.GraphQL(r.exec))))
 
 	registry.Route("/graphql-console", "graphql.console")
 	u, _ := r.reverseRouter.Relative("graphql", nil)

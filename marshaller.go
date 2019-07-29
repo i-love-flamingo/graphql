@@ -21,6 +21,9 @@ func UnmarshalFloat(v interface{}) (big.Float, error) {
 	switch v := v.(type) {
 	case string:
 		f, _, err := big.ParseFloat(v, 10, 64, big.ToNearestEven)
+		if f == nil {
+			return big.Float{}, err
+		}
 		return *f, err
 	case int:
 		return *big.NewFloat(float64(v)), nil

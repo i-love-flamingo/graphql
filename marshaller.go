@@ -33,6 +33,9 @@ func UnmarshalFloat(v interface{}) (big.Float, error) {
 		return *big.NewFloat(v), nil
 	case json.Number:
 		f, _, err := big.ParseFloat(string(v), 10, 64, big.ToNearestEven)
+		if f == nil {
+			return big.Float{}, err
+		}
 		return *f, err
 	default:
 		return big.Float{}, fmt.Errorf("%T is not an float", v)

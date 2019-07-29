@@ -22,18 +22,18 @@ func TestHelperModels(t *testing.T) {
 		t.Error("Test Model is not implemented")
 	}
 
-	TestModelValue := res["TestModel"]
+	testModelValue := res["TestModel"]
 
-	if TestModelValue.Model.Has("flamingo.me/graphql.TestModel") == false {
+	if !testModelValue.Model.Has("flamingo.me/graphql.TestModel") {
 		t.Error("Test Model not mapped correctly")
 	}
 
-	if _, ok := TestModelValue.Fields["testMethod"]; !ok {
+	if _, ok := testModelValue.Fields["testMethod"]; !ok {
 		t.Error("Test Model method does not exists")
 	}
 
-	TestModelFieldsTestMethod := TestModelValue.Fields["testMethod"]
-	if TestModelFieldsTestMethod.FieldName != "TestModelMethod" {
+	testModelFieldsTestMethod := testModelValue.Fields["testMethod"]
+	if testModelFieldsTestMethod.FieldName != "TestModelMethod" {
 		t.Error("Test Model method field name is not matching")
 	}
 }
@@ -47,13 +47,13 @@ func TestHelperModelsFlat(t *testing.T) {
 		t.Error("Test Model is not implemented")
 	}
 
-	TestModelValue := res["TestModel"]
+	testModelValue := res["TestModel"]
 
-	if TestModelValue.Model.Has("flamingo.me/graphql.TestModel") == false {
+	if !testModelValue.Model.Has("flamingo.me/graphql.TestModel") {
 		t.Error("Test Model not mapped correctly")
 	}
 
-	if TestModelValue.Fields != nil {
+	if testModelValue.Fields != nil {
 		t.Error("Test Model Fields are not empty")
 	}
 }

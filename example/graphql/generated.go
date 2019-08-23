@@ -48,6 +48,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		Flamingo func(childComplexity int) int
 		TodoAdd  func(childComplexity int, user string, task string) int
+		TodoDone func(childComplexity int, todo string, done bool) int
 	}
 
 	Query struct {
@@ -56,6 +57,7 @@ type ComplexityRoot struct {
 	}
 
 	Todo struct {
+		Done func(childComplexity int) int
 		ID   func(childComplexity int) int
 		Task func(childComplexity int) int
 	}
@@ -70,6 +72,7 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
 	TodoAdd(ctx context.Context, user string, task string) (*domain.Todo, error)
+	TodoDone(ctx context.Context, todo string, done bool) (*domain.Todo, error)
 }
 type QueryResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
@@ -113,6 +116,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.TodoAdd(childComplexity, args["user"].(string), args["task"].(string)), true
 
+	case "Mutation.TodoDone":
+		if e.complexity.Mutation.TodoDone == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_TodoDone_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.TodoDone(childComplexity, args["todo"].(string), args["done"].(bool)), true
+
 	case "Query.flamingo":
 		if e.complexity.Query.Flamingo == nil {
 			break
@@ -131,6 +146,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.User(childComplexity, args["id"].(string)), true
+
+	case "Todo.done":
+		if e.complexity.Todo.Done == nil {
+			break
+		}
+
+		return e.complexity.Todo.Done(childComplexity), true
 
 	case "Todo.id":
 		if e.complexity.Todo.ID == nil {
@@ -248,6 +270,7 @@ var parsedSchema = gqlparser.MustLoadSchema(
 type Todo {
 	id: ID!
 	task: String!
+	done: Boolean!
 }
 
 extend type User {
@@ -256,6 +279,7 @@ extend type User {
 
 extend type Mutation {
 	TodoAdd(user: ID!, task: String!): Todo
+	TodoDone(todo: ID!, done: Boolean!): Todo
 }
 `},
 	&ast.Source{Name: "graphql/schema/flamingo.me_graphql_example_user_interfaces_graphql-Service.graphql", Input: `type User {
@@ -296,6 +320,28 @@ func (ec *executionContext) field_Mutation_TodoAdd_args(ctx context.Context, raw
 		}
 	}
 	args["task"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_TodoDone_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["todo"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["todo"] = arg0
+	var arg1 bool
+	if tmp, ok := rawArgs["done"]; ok {
+		arg1, err = ec.unmarshalNBoolean2bool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["done"] = arg1
 	return args, nil
 }
 
@@ -404,6 +450,37 @@ func (ec *executionContext) _Mutation_TodoAdd(ctx context.Context, field graphql
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().TodoAdd(rctx, args["user"].(string), args["task"].(string))
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*domain.Todo)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOTodo2ᚖflamingoᚗmeᚋgraphqlᚋexampleᚋtodoᚋdomainᚐTodo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_TodoDone(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_TodoDone_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().TodoDone(rctx, args["todo"].(string), args["done"].(bool))
 	})
 	if resTmp == nil {
 		return graphql.Null
@@ -576,6 +653,33 @@ func (ec *executionContext) _Todo_task(ctx context.Context, field graphql.Collec
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Todo_done(ctx context.Context, field graphql.CollectedField, obj *domain.Todo) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Todo",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Done, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *domain1.User) graphql.Marshaler {
@@ -1511,6 +1615,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_flamingo(ctx, field)
 		case "TodoAdd":
 			out.Values[i] = ec._Mutation_TodoAdd(ctx, field)
+		case "TodoDone":
+			out.Values[i] = ec._Mutation_TodoDone(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1592,6 +1698,11 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "task":
 			out.Values[i] = ec._Todo_task(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "done":
+			out.Values[i] = ec._Todo_done(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

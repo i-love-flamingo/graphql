@@ -31,3 +31,13 @@ func (ts *TodoService) AddTodo(ctx context.Context, userid string, task string) 
 	todos = append(todos, todo)
 	return todo, nil
 }
+
+func (ts *TodoService) TodoDone(ctx context.Context, todoId string, done bool) (*domain.Todo, error) {
+	for i, todo := range todos {
+		if todo.ID == todoId {
+			todos[i].Done = done
+			return todos[i], nil
+		}
+	}
+	return nil, errors.New("todo not found")
+}

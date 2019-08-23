@@ -55,6 +55,7 @@ query {
         todos {
             id
             task
+            done
         }
     }
 }
@@ -83,34 +84,53 @@ mutation add($todo: String!) {
   TodoAdd(user: "user1", task: $todo) {
     id
     task
+    done
   }
 }
-`, {'todo': todo}).then(r=>r.json()).then(data => check(data)).then(data => {
+`, {'todo': todo.id, }).then(r=>r.json()).then(data => check(data)).then(data => {
                 setTodo(data.data.TodoAdd)
             })
         }
 
-        function doneTask(id) {
-            console.log("finished", id)
+        function doneTask(id, t) {
+            query( `
+mutation done($todo: ID!, $done: Boolean!) {
+  TodoDone(todo: $todo, done: $done) {
+    id
+    task
+    done
+  }
+}
+`, {'todo': id, 'done': document.getElementById("tododone-" + id).checked}).then(r=>r.json()).then(data => check(data)).then(data => {
+                setTodo(data.data.TodoDone)
+            })
         }
 
         function setTodo(todo) {
             if (document.getElementById("todo-" + todo.id)) {
-                document.getElementById("todo-" + todo.id).innerText = todo.task
+                document.getElementById("todotext-" + todo.id).innerText = todo.task
                 if (todo.done) {
-                    document.getElementById("tododone-" + todo.id).setAttribute("checked", "checked")
-                }else {
-                    document.getElementById("tododone-" + todo.id).removeAttribute("checked")
+                    document.getElementById("tododone-" + todo.id).checked = true
+                } else {
+                    document.getElementById("tododone-" + todo.id).checked = false
                 }
             } else {
                 var newtodo = document.createElement("div")
                 newtodo.setAttribute("id", "todo-" + todo.id)
-                newtodo.innerText = todo.task
+
+                var newtodotext = document.createElement("span")
+                newtodotext.setAttribute("id", "todotext-" + todo.id)
+                newtodotext.innerText = todo.task
 
                 var newtododone = document.createElement("input")
                 newtododone.setAttribute("type", "checkbox")
-                newtododone.onchange = function() { doneTask(todo.id) }
+                if (todo.done) {
+                    newtododone.checked = true
+                }
+                newtododone.onclick = function() { doneTask(todo.id) }
                 newtododone.setAttribute("id", "tododone-" + todo.id)
+
+                newtodo.appendChild(newtodotext)
                 newtodo.appendChild(newtododone)
 
                 document.getElementById("taskList").appendChild(newtodo)

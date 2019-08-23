@@ -14,17 +14,17 @@ import (
 type rootResolver struct {
 	todoUserResolver *todo.TodoUserResolver
 	queryResolver    *queryResolver
-	todoResolver     *todoResolver
+	mutationResolver *mutationResolver
 }
 
 func (r *rootResolver) Inject(
 	todoUserResolver *todo.TodoUserResolver,
 	queryResolver *queryResolver,
-	todoResolver *todoResolver,
+	mutationResolver *mutationResolver,
 ) *rootResolver {
 	r.todoUserResolver = todoUserResolver
 	r.queryResolver = queryResolver
-	r.todoResolver = todoResolver
+	r.mutationResolver = mutationResolver
 	return r
 }
 
@@ -35,15 +35,11 @@ func (r *rootResolver) Query() QueryResolver {
 }
 
 func (r *rootResolver) Mutation() MutationResolver {
-	panic("no mutations available")
+	return r.mutationResolver
 }
 
 func (r *rootResolver) User() UserResolver {
 	return r.todoUserResolver
-}
-
-func (r *rootResolver) Todo() TodoResolver {
-	return r.todoResolver
 }
 
 type queryResolver struct {
@@ -57,10 +53,12 @@ func (r *queryResolver) Inject(flamingoQueryResolver *graphql.FlamingoQueryResol
 	return r
 }
 
-type todoResolver struct {
-	*todo.TodoResolver
+type mutationResolver struct {
+	*graphql.FlamingoQueryResolver
+	*todo.TodoMutationResolver
 }
 
-func (r *todoResolver) Inject(tr *todo.TodoResolver) {
-	r.TodoResolver = tr
+func (r *mutationResolver) Inject(flamingoQueryResolver *graphql.FlamingoQueryResolver, resolver *todo.TodoMutationResolver) {
+	r.FlamingoQueryResolver = flamingoQueryResolver
+	r.TodoMutationResolver = resolver
 }

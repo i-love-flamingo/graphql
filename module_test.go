@@ -1,9 +1,10 @@
 package graphql_test
 
 import (
+	"testing"
+
 	"flamingo.me/dingo"
 	"flamingo.me/graphql"
-	"testing"
 )
 
 func TestModule_Configure(t *testing.T) {

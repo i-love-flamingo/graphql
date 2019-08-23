@@ -13,26 +13,17 @@ type Service struct{}
 func (*Service) Schema() []byte {
 	// language=graphql
 	return []byte(`
-interface Task {
-	a: String
-}
-
-type Todo implements Task {
-	id: ID
+type Todo {
+	id: ID!
 	task: String!
-	points: Float
-	points2: Float
-
-	a: String
-	b: String
-}
-
-extend interface Task {
-	b: String
 }
 
 extend type User {
 	todos: [Todo]
+}
+
+extend type Mutation {
+	TodoAdd(user: ID!, task: String!): Todo
 }
 `)
 }
@@ -40,7 +31,6 @@ extend type User {
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
 		"Todo": domain.Todo{},
-		"Task": new(domain.Task),
 	}.Models()
 }
 
@@ -53,6 +43,5 @@ func (Module) Configure(injector *dingo.Injector) {
 func (*Module) Depends() []dingo.Module {
 	return []dingo.Module{
 		new(user.Module),
-		new(graphql.Module),
 	}
 }

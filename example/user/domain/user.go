@@ -3,7 +3,8 @@ package domain
 import "context"
 
 type User struct {
-	Name string
+	Name      string
+	Nicknames []string
 }
 
 type UserService interface {

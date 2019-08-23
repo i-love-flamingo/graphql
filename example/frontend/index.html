@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+<head>
+    <script type="application/javascript">
+        const endpoint = 'http://localhost:3322/graphql'
+    </script>
+
+    <style type="text/css">
+        * {
+            font-size: 20pt;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: #e3e3e3;
+        }
+
+        #main {
+            width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+        }
+
+        button {
+            border-radius: 6px;
+        }
+
+        #newTask {
+            width: 600px;
+        }
+    </style>
+
+    <script type="application/javascript">
+        function query(query, variables) {
+            return fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    query: query,
+                    variables: variables,
+                })
+            })
+        }
+
+        function loadTasks() {
+            query(`
+query {
+    User(id: "asd") {
+        name
+        todos {
+            id
+            task
+        }
+    }
+}
+`)
+                .then(r => r.json())
+                .then(data => check(data))
+                .then(data => {
+                    document.getElementById("username").innerText = data.data.User.name
+                    for (todo of data.data.User.todos) {
+                        setTodo(todo)
+                    }
+                })
+        }
+
+        function check(data) {
+            console.log('data returned:', data)
+            if (data.errors) {
+                alert(JSON.stringify(data.errors))
+            }
+            return data
+        }
+
+        function addTask(todo) {
+            query( `
+mutation add($todo: String!) {
+  TodoAdd(user: "user1", task: $todo) {
+    id
+    task
+  }
+}
+`, {'todo': todo}).then(r=>r.json()).then(data => check(data)).then(data => {
+                setTodo(data.data.TodoAdd)
+            })
+        }
+
+        function doneTask(id) {
+            console.log("finished", id)
+        }
+
+        function setTodo(todo) {
+            if (document.getElementById("todo-" + todo.id)) {
+                document.getElementById("todo-" + todo.id).innerText = todo.task
+                if (todo.done) {
+                    document.getElementById("tododone-" + todo.id).setAttribute("checked", "checked")
+                }else {
+                    document.getElementById("tododone-" + todo.id).removeAttribute("checked")
+                }
+            } else {
+                var newtodo = document.createElement("div")
+                newtodo.setAttribute("id", "todo-" + todo.id)
+                newtodo.innerText = todo.task
+
+                var newtododone = document.createElement("input")
+                newtododone.setAttribute("type", "checkbox")
+                newtododone.onchange = function() { doneTask(todo.id) }
+                newtododone.setAttribute("id", "tododone-" + todo.id)
+                newtodo.appendChild(newtododone)
+
+                document.getElementById("taskList").appendChild(newtodo)
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div id="main">
+        Hello <span id="username"></span>
+        <hr/>
+
+        <input id="newTask" /> <button id="addNewTask" onclick="addTask(document.getElementById('newTask').value)">Add</button><br/>
+        <div id="taskList"></div>
+    </div>
+
+    <script type="application/javascript">
+        loadTasks()
+    </script>
+</body>
+</html>

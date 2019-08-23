@@ -7,7 +7,7 @@ import (
 	"github.com/99designs/gqlgen/codegen/config"
 )
 
-// ModelMap is a helper to quickly create map[string]TypeMapEntry for types
+// ModelMap is a helper to quickly create map[string]TypeMapEntry for graphql type mappings.
 type ModelMap map[string]interface{}
 
 // Models creates the references via reflection
@@ -44,18 +44,21 @@ func (m ModelMap) Models() map[string]config.TypeMapEntry {
 	return res
 }
 
+// ModelMapEntry can be used to create a more detailed ModelMap.
 type ModelMapEntry struct {
 	Type   interface{}
 	Fields map[string]string
 }
 
+// FlamingoQueryResolver always resolves to the string "flamingo" for the default schemas.
 type FlamingoQueryResolver struct{}
 
+// Flamingo field resolver
 func (*FlamingoQueryResolver) Flamingo(ctx context.Context) (*string, error) {
 	return FlamingoResolver(ctx)
 }
 
-// FlamingoResolver example
+// FlamingoResolver always returns "flamingo" for default schemas.
 func FlamingoResolver(_ context.Context) (*string, error) {
 	flamingo := "flamingo"
 	return &flamingo, nil

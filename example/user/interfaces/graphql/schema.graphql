@@ -1,5 +1,6 @@
 type User {
     name: String!
+    nicknames: [String!]
 }
 
 extend type Query {

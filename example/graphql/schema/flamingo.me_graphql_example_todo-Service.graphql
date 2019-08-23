@@ -1,22 +1,13 @@
 
-interface Task {
-	a: String
-}
-
-type Todo implements Task {
-	id: ID
+type Todo {
+	id: ID!
 	task: String!
-	points: Float
-	points2: Float
-
-	a: String
-	b: String
-}
-
-extend interface Task {
-	b: String
 }
 
 extend type User {
 	todos: [Todo]
+}
+
+extend type Mutation {
+	TodoAdd(user: ID!, task: String!): Todo
 }

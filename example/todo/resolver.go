@@ -8,13 +8,6 @@ import (
 	userDomain "flamingo.me/graphql/example/user/domain"
 )
 
-type TodoResolver struct{}
-
-func (*TodoResolver) B(ctx context.Context, obj *domain.Todo) (*string, error) {
-	s := "B"
-	return &s, nil
-}
-
 type TodoUserResolver struct {
 	todosBackend *infrastructure.TodoService
 }
@@ -26,4 +19,17 @@ func (r *TodoUserResolver) Inject(todosBackend *infrastructure.TodoService) *Tod
 
 func (r *TodoUserResolver) Todos(ctx context.Context, obj *userDomain.User) ([]*domain.Todo, error) {
 	return r.todosBackend.Todos(ctx, obj.Name)
+}
+
+type TodoMutationResolver struct {
+	resolver *TodoUserResolver
+}
+
+func (r *TodoMutationResolver) Inject(resolver *TodoUserResolver) *TodoMutationResolver {
+	r.resolver = resolver
+	return r
+}
+
+func (r *TodoMutationResolver) TodoAdd(ctx context.Context, user string, task string) (*domain.Todo, error) {
+	return r.resolver.todosBackend.AddTodo(ctx, user, task)
 }

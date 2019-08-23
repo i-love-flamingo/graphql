@@ -1,0 +1,2 @@
+- path: /
+  controller: static(file='frontend/index.html')

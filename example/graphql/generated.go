@@ -6,15 +6,12 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"fmt"
-	"math/big"
 	"strconv"
 	"sync"
 	"sync/atomic"
 
-	graphql1 "flamingo.me/graphql"
-	domain1 "flamingo.me/graphql/example/todo/domain"
-	"flamingo.me/graphql/example/user/domain"
+	"flamingo.me/graphql/example/todo/domain"
+	domain1 "flamingo.me/graphql/example/user/domain"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/vektah/gqlparser"
@@ -41,7 +38,6 @@ type Config struct {
 type ResolverRoot interface {
 	Mutation() MutationResolver
 	Query() QueryResolver
-	Todo() TodoResolver
 	User() UserResolver
 }
 
@@ -51,6 +47,7 @@ type DirectiveRoot struct {
 type ComplexityRoot struct {
 	Mutation struct {
 		Flamingo func(childComplexity int) int
+		TodoAdd  func(childComplexity int, user string, task string) int
 	}
 
 	Query struct {
@@ -59,32 +56,27 @@ type ComplexityRoot struct {
 	}
 
 	Todo struct {
-		A       func(childComplexity int) int
-		B       func(childComplexity int) int
-		ID      func(childComplexity int) int
-		Points  func(childComplexity int) int
-		Points2 func(childComplexity int) int
-		Task    func(childComplexity int) int
+		ID   func(childComplexity int) int
+		Task func(childComplexity int) int
 	}
 
 	User struct {
-		Name  func(childComplexity int) int
-		Todos func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Nicknames func(childComplexity int) int
+		Todos     func(childComplexity int) int
 	}
 }
 
 type MutationResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
+	TodoAdd(ctx context.Context, user string, task string) (*domain.Todo, error)
 }
 type QueryResolver interface {
 	Flamingo(ctx context.Context) (*string, error)
-	User(ctx context.Context, id string) (*domain.User, error)
-}
-type TodoResolver interface {
-	B(ctx context.Context, obj *domain1.Todo) (*string, error)
+	User(ctx context.Context, id string) (*domain1.User, error)
 }
 type UserResolver interface {
-	Todos(ctx context.Context, obj *domain.User) ([]*domain1.Todo, error)
+	Todos(ctx context.Context, obj *domain1.User) ([]*domain.Todo, error)
 }
 
 type executableSchema struct {
@@ -109,6 +101,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Flamingo(childComplexity), true
 
+	case "Mutation.TodoAdd":
+		if e.complexity.Mutation.TodoAdd == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_TodoAdd_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.TodoAdd(childComplexity, args["user"].(string), args["task"].(string)), true
+
 	case "Query.flamingo":
 		if e.complexity.Query.Flamingo == nil {
 			break
@@ -128,40 +132,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.User(childComplexity, args["id"].(string)), true
 
-	case "Todo.a":
-		if e.complexity.Todo.A == nil {
-			break
-		}
-
-		return e.complexity.Todo.A(childComplexity), true
-
-	case "Todo.b":
-		if e.complexity.Todo.B == nil {
-			break
-		}
-
-		return e.complexity.Todo.B(childComplexity), true
-
 	case "Todo.id":
 		if e.complexity.Todo.ID == nil {
 			break
 		}
 
 		return e.complexity.Todo.ID(childComplexity), true
-
-	case "Todo.points":
-		if e.complexity.Todo.Points == nil {
-			break
-		}
-
-		return e.complexity.Todo.Points(childComplexity), true
-
-	case "Todo.points2":
-		if e.complexity.Todo.Points2 == nil {
-			break
-		}
-
-		return e.complexity.Todo.Points2(childComplexity), true
 
 	case "Todo.task":
 		if e.complexity.Todo.Task == nil {
@@ -176,6 +152,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.Name(childComplexity), true
+
+	case "User.nicknames":
+		if e.complexity.User.Nicknames == nil {
+			break
+		}
+
+		return e.complexity.User.Nicknames(childComplexity), true
 
 	case "User.todos":
 		if e.complexity.User.Todos == nil {
@@ -262,30 +245,22 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var parsedSchema = gqlparser.MustLoadSchema(
 	&ast.Source{Name: "graphql/schema/flamingo.me_graphql_example_todo-Service.graphql", Input: `
-interface Task {
-	a: String
-}
-
-type Todo implements Task {
-	id: ID
+type Todo {
+	id: ID!
 	task: String!
-	points: Float
-	points2: Float
-
-	a: String
-	b: String
-}
-
-extend interface Task {
-	b: String
 }
 
 extend type User {
 	todos: [Todo]
 }
+
+extend type Mutation {
+	TodoAdd(user: ID!, task: String!): Todo
+}
 `},
 	&ast.Source{Name: "graphql/schema/flamingo.me_graphql_example_user_interfaces_graphql-Service.graphql", Input: `type User {
     name: String!
+    nicknames: [String!]
 }
 
 extend type Query {
@@ -301,6 +276,28 @@ scalar Map`},
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_TodoAdd_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["user"]; ok {
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["user"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["task"]; ok {
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["task"] = arg1
+	return args, nil
+}
 
 func (ec *executionContext) field_Query_User_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -386,6 +383,37 @@ func (ec *executionContext) _Mutation_flamingo(ctx context.Context, field graphq
 	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_TodoAdd(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "Mutation",
+		Field:    field,
+		Args:     nil,
+		IsMethod: true,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_TodoAdd_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx.Args = args
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().TodoAdd(rctx, args["user"].(string), args["task"].(string))
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*domain.Todo)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOTodo2ᚖflamingoᚗmeᚋgraphqlᚋexampleᚋtodoᚋdomainᚐTodo(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_flamingo(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -435,7 +463,7 @@ func (ec *executionContext) _Query_User(ctx context.Context, field graphql.Colle
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*domain.User)
+	res := resTmp.(*domain1.User)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalOUser2ᚖflamingoᚗmeᚋgraphqlᚋexampleᚋuserᚋdomainᚐUser(ctx, field.Selections, res)
@@ -496,7 +524,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.CollectedField, obj *domain1.Todo) graphql.Marshaler {
+func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.CollectedField, obj *domain.Todo) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -512,15 +540,18 @@ func (ec *executionContext) _Todo_id(ctx context.Context, field graphql.Collecte
 		return obj.ID, nil
 	})
 	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(string)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOID2string(ctx, field.Selections, res)
+	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Todo_task(ctx context.Context, field graphql.CollectedField, obj *domain1.Todo) graphql.Marshaler {
+func (ec *executionContext) _Todo_task(ctx context.Context, field graphql.CollectedField, obj *domain.Todo) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -547,103 +578,7 @@ func (ec *executionContext) _Todo_task(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Todo_points(ctx context.Context, field graphql.CollectedField, obj *domain1.Todo) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Todo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Points, nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*big.Float)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOFloat2ᚖmathᚋbigᚐFloat(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Todo_points2(ctx context.Context, field graphql.CollectedField, obj *domain1.Todo) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Todo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: false,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Points2, nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(float64)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOFloat2float64(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Todo_a(ctx context.Context, field graphql.CollectedField, obj *domain1.Todo) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Todo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.A(), nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Todo_b(ctx context.Context, field graphql.CollectedField, obj *domain1.Todo) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object:   "Todo",
-		Field:    field,
-		Args:     nil,
-		IsMethod: true,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Todo().B(rctx, obj)
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *domain.User) graphql.Marshaler {
+func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *domain1.User) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -670,7 +605,31 @@ func (ec *executionContext) _User_name(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _User_todos(ctx context.Context, field graphql.CollectedField, obj *domain.User) graphql.Marshaler {
+func (ec *executionContext) _User_nicknames(ctx context.Context, field graphql.CollectedField, obj *domain1.User) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object:   "User",
+		Field:    field,
+		Args:     nil,
+		IsMethod: false,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Nicknames, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return ec.marshalOString2ᚕstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_todos(ctx context.Context, field graphql.CollectedField, obj *domain1.User) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -688,7 +647,7 @@ func (ec *executionContext) _User_todos(ctx context.Context, field graphql.Colle
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*domain1.Todo)
+	res := resTmp.([]*domain.Todo)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return ec.marshalOTodo2ᚕᚖflamingoᚗmeᚋgraphqlᚋexampleᚋtodoᚋdomainᚐTodo(ctx, field.Selections, res)
@@ -1529,17 +1488,6 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    ************************** interface.gotpl ***************************
 
-func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj *domain1.Task) graphql.Marshaler {
-	switch obj := (*obj).(type) {
-	case nil:
-		return graphql.Null
-	case *domain1.Todo:
-		return ec._Todo(ctx, sel, obj)
-	default:
-		panic(fmt.Errorf("unexpected type %T", obj))
-	}
-}
-
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
@@ -1561,6 +1509,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = graphql.MarshalString("Mutation")
 		case "flamingo":
 			out.Values[i] = ec._Mutation_flamingo(ctx, field)
+		case "TodoAdd":
+			out.Values[i] = ec._Mutation_TodoAdd(ctx, field)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1624,9 +1574,9 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
-var todoImplementors = []string{"Todo", "Task"}
+var todoImplementors = []string{"Todo"}
 
-func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj *domain1.Todo) graphql.Marshaler {
+func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj *domain.Todo) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, todoImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -1637,28 +1587,14 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 			out.Values[i] = graphql.MarshalString("Todo")
 		case "id":
 			out.Values[i] = ec._Todo_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "task":
 			out.Values[i] = ec._Todo_task(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
-		case "points":
-			out.Values[i] = ec._Todo_points(ctx, field, obj)
-		case "points2":
-			out.Values[i] = ec._Todo_points2(ctx, field, obj)
-		case "a":
-			out.Values[i] = ec._Todo_a(ctx, field, obj)
-		case "b":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Todo_b(ctx, field, obj)
-				return res
-			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -1672,7 +1608,7 @@ func (ec *executionContext) _Todo(ctx context.Context, sel ast.SelectionSet, obj
 
 var userImplementors = []string{"User"}
 
-func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *domain.User) graphql.Marshaler {
+func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *domain1.User) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.RequestContext, sel, userImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -1686,6 +1622,8 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "nicknames":
+			out.Values[i] = ec._User_nicknames(ctx, field, obj)
 		case "todos":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -1967,6 +1905,20 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
+	return graphql.UnmarshalID(v)
+}
+
+func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !ec.HasError(graphql.GetResolverContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	return graphql.UnmarshalString(v)
 }
@@ -2230,51 +2182,44 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return ec.marshalOBoolean2bool(ctx, sel, *v)
 }
 
-func (ec *executionContext) unmarshalOFloat2float64(ctx context.Context, v interface{}) (float64, error) {
-	return graphql.UnmarshalFloat(v)
-}
-
-func (ec *executionContext) marshalOFloat2float64(ctx context.Context, sel ast.SelectionSet, v float64) graphql.Marshaler {
-	return graphql.MarshalFloat(v)
-}
-
-func (ec *executionContext) unmarshalOFloat2mathᚋbigᚐFloat(ctx context.Context, v interface{}) (big.Float, error) {
-	return graphql1.UnmarshalFloat(v)
-}
-
-func (ec *executionContext) marshalOFloat2mathᚋbigᚐFloat(ctx context.Context, sel ast.SelectionSet, v big.Float) graphql.Marshaler {
-	return graphql1.MarshalFloat(v)
-}
-
-func (ec *executionContext) unmarshalOFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, v interface{}) (*big.Float, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalOFloat2mathᚋbigᚐFloat(ctx, v)
-	return &res, err
-}
-
-func (ec *executionContext) marshalOFloat2ᚖmathᚋbigᚐFloat(ctx context.Context, sel ast.SelectionSet, v *big.Float) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec.marshalOFloat2mathᚋbigᚐFloat(ctx, sel, *v)
-}
-
-func (ec *executionContext) unmarshalOID2string(ctx context.Context, v interface{}) (string, error) {
-	return graphql.UnmarshalID(v)
-}
-
-func (ec *executionContext) marshalOID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	return graphql.MarshalID(v)
-}
-
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
 	return graphql.UnmarshalString(v)
 }
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	return graphql.MarshalString(v)
+}
+
+func (ec *executionContext) unmarshalOString2ᚕstring(ctx context.Context, v interface{}) ([]string, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]string, len(vSlice))
+	for i := range vSlice {
+		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOString2ᚕstring(ctx context.Context, sel ast.SelectionSet, v []string) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNString2string(ctx, sel, v[i])
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
@@ -2292,11 +2237,11 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return ec.marshalOString2string(ctx, sel, *v)
 }
 
-func (ec *executionContext) marshalOTodo2flamingoᚗmeᚋgraphqlᚋexampleᚋtodoᚋdomainᚐTodo(ctx context.Context, sel ast.SelectionSet, v domain1.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalOTodo2flamingoᚗmeᚋgraphqlᚋexampleᚋtodoᚋdomainᚐTodo(ctx context.Context, sel ast.SelectionSet, v domain.Todo) graphql.Marshaler {
 	return ec._Todo(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOTodo2ᚕᚖflamingoᚗmeᚋgraphqlᚋexampleᚋtodoᚋdomainᚐTodo(ctx context.Context, sel ast.SelectionSet, v []*domain1.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalOTodo2ᚕᚖflamingoᚗmeᚋgraphqlᚋexampleᚋtodoᚋdomainᚐTodo(ctx context.Context, sel ast.SelectionSet, v []*domain.Todo) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -2336,18 +2281,18 @@ func (ec *executionContext) marshalOTodo2ᚕᚖflamingoᚗmeᚋgraphqlᚋexample
 	return ret
 }
 
-func (ec *executionContext) marshalOTodo2ᚖflamingoᚗmeᚋgraphqlᚋexampleᚋtodoᚋdomainᚐTodo(ctx context.Context, sel ast.SelectionSet, v *domain1.Todo) graphql.Marshaler {
+func (ec *executionContext) marshalOTodo2ᚖflamingoᚗmeᚋgraphqlᚋexampleᚋtodoᚋdomainᚐTodo(ctx context.Context, sel ast.SelectionSet, v *domain.Todo) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Todo(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOUser2flamingoᚗmeᚋgraphqlᚋexampleᚋuserᚋdomainᚐUser(ctx context.Context, sel ast.SelectionSet, v domain.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2flamingoᚗmeᚋgraphqlᚋexampleᚋuserᚋdomainᚐUser(ctx context.Context, sel ast.SelectionSet, v domain1.User) graphql.Marshaler {
 	return ec._User(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalOUser2ᚖflamingoᚗmeᚋgraphqlᚋexampleᚋuserᚋdomainᚐUser(ctx context.Context, sel ast.SelectionSet, v *domain.User) graphql.Marshaler {
+func (ec *executionContext) marshalOUser2ᚖflamingoᚗmeᚋgraphqlᚋexampleᚋuserᚋdomainᚐUser(ctx context.Context, sel ast.SelectionSet, v *domain1.User) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

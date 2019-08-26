@@ -1,10 +1,12 @@
 # Flamingo GraphQL Example
 
-Regenerate GraphQL: `go run main.go graphql`
+Regenerate GraphQL: `go generate .`
 
 Run Server: `go run main.go serve`
 
 Show console: http://localhost:3322/graphql-console
+
+Show frontend: http://localhost:3322/
 
 ## Resources
 
@@ -20,4 +22,4 @@ GraphQL Specification: https://graphql.github.io/graphql-spec/June2018/#sec-Sche
 
 ## Adding new Fields/Structs
 
-(Rerun) code generation: `go run -tags graphql main.go graphql`
+(Rerun) code generation: `go generate .`

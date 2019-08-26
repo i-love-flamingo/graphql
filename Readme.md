@@ -1,5 +1,9 @@
 # Flamingo GraphQL
 
+This modul allows the usage of GraphQL services in your Flamingo project.
+
+Please see `example/` on how this works.
+
 ## Setup
 
 Add the `graphql.Module` to your projects modules.

@@ -1,4 +1,4 @@
-package graphql
+package graphql // import "flamingo.me/graphql"
 
 import (
 	"net/http"

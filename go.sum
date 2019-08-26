@@ -1,11 +1,9 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
-flamingo.me/dingo v0.1.5 h1:nvhmtoSE8ihA+q5qHgh6WXrmLS5QX8jdCDwydyIrwh8=
-flamingo.me/dingo v0.1.5/go.mod h1:jLnqSPkxqE113eKreQ4uBx1fnwluGuaK3rjRi9041wU=
-flamingo.me/dingo v0.1.6-0.20190724094148-8f9f5b4d8d0f h1:d9DlGKTLzlpaR+jGq3eTOlNCvil/aIJsMJljvWrRYJc=
-flamingo.me/dingo v0.1.6-0.20190724094148-8f9f5b4d8d0f/go.mod h1:jLnqSPkxqE113eKreQ4uBx1fnwluGuaK3rjRi9041wU=
-flamingo.me/flamingo/v3 v3.0.0-beta.3.0.20190822153000-cbfe37613b9b h1:ZJlvaqJ6qiSSI5PQyZM4lzPk5VriKUSHfF/7AlAEVZg=
-flamingo.me/flamingo/v3 v3.0.0-beta.3.0.20190822153000-cbfe37613b9b/go.mod h1:At4i6702TI36uQ7z/hPqfnGjLhBdF/GPvYZ91m6M9oo=
+flamingo.me/dingo v0.1.6 h1:8P2t2wbJjzn1qI84ARRBkJlBxtTwGKulXc6oj+heUOw=
+flamingo.me/dingo v0.1.6/go.mod h1:jLnqSPkxqE113eKreQ4uBx1fnwluGuaK3rjRi9041wU=
+flamingo.me/flamingo/v3 v3.0.0 h1:LvzNMiRvRL9SMTloJhLrq0nXU81R9A23SLsojx4FziE=
+flamingo.me/flamingo/v3 v3.0.0/go.mod h1:ByUY1LqjcnzSaNAs2b4QusOWawdTfb86fZygVOKu+Gc=
 git.apache.org/thrift.git v0.12.0 h1:CMxsZlAmxKs+VAZMlDDL0wXciMblJcutQbEe3A9CYUM=
 git.apache.org/thrift.git v0.12.0/go.mod h1:fPE2ZNJGynbRyZ4dJvy6G277gSllfV2HJqblrnkyeyg=
 github.com/99designs/gqlgen v0.9.0 h1:g1arBPML74Vqv0L3Q+TqIhGXLspV+2MYtRLkBxuZrlE=

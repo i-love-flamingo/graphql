@@ -87,7 +87,7 @@ mutation add($todo: String!) {
     done
   }
 }
-`, {'todo': todo.id, }).then(r=>r.json()).then(data => check(data)).then(data => {
+`, {'todo': todo, }).then(r=>r.json()).then(data => check(data)).then(data => {
                 setTodo(data.data.TodoAdd)
             })
         }

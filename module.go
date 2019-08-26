@@ -1,6 +1,6 @@
 package graphql
 
-//go:generate go run github.com/go-bindata/go-bindata/go-bindata -o templates/fs.go -pkg templates -prefix templates/ templates/*.tpl templates/schema.graphql
+//go:generate go run github.com/go-bindata/go-bindata/go-bindata -prefix templates/ -o templates/fs.go -pkg templates -ignore=fs.go templates/
 
 import (
 	"flamingo.me/dingo"

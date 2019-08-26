@@ -19,7 +19,6 @@ const (
 	schemaBasePath = "graphql/schema"
 )
 
-//go:generate go run github.com/go-bindata/go-bindata/go-bindata -prefix templates/ -o templates/fs.go -pkg templates -ignore=fs.go templates/
 func command(
 	services []Service,
 ) *cobra.Command {

@@ -55,7 +55,7 @@ query {
         todos {
             id
             task
-            done
+            # done
         }
     }
 }
@@ -84,7 +84,7 @@ mutation add($todo: String!) {
   TodoAdd(user: "user1", task: $todo) {
     id
     task
-    done
+    # done
   }
 }
 `, {'todo': todo, }).then(r=>r.json()).then(data => check(data)).then(data => {
@@ -98,7 +98,7 @@ mutation done($todo: ID!, $done: Boolean!) {
   TodoDone(todo: $todo, done: $done) {
     id
     task
-    done
+    # done
   }
 }
 `, {'todo': id, 'done': document.getElementById("tododone-" + id).checked}).then(r=>r.json()).then(data => check(data)).then(data => {

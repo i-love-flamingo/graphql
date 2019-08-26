@@ -33,7 +33,3 @@ func (r *TodoMutationResolver) Inject(resolver *TodoUserResolver) *TodoMutationR
 func (r *TodoMutationResolver) TodoAdd(ctx context.Context, user string, task string) (*domain.Todo, error) {
 	return r.resolver.todosBackend.AddTodo(ctx, user, task)
 }
-
-func (r *TodoMutationResolver) TodoDone(ctx context.Context, todo string, done bool) (*domain.Todo, error) {
-	return r.resolver.todosBackend.TodoDone(ctx, todo, done)
-}

@@ -16,7 +16,6 @@ func (*Service) Schema() []byte {
 type Todo {
 	id: ID!
 	task: String!
-	done: Boolean!
 }
 
 extend type User {
@@ -25,7 +24,6 @@ extend type User {
 
 extend type Mutation {
 	TodoAdd(user: ID!, task: String!): Todo
-	TodoDone(todo: ID!, done: Boolean!): Todo
 }
 `)
 }

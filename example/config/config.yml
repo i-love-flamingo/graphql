@@ -1,1 +1,1 @@
-graphql.cors.whitelist: ["null"]
+graphql.cors.whitelist: ["*"]

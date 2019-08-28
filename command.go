@@ -52,7 +52,7 @@ func command(
 			resolverPath := path.Join(basePath, "resolver.go")
 
 			if _, err := os.Stat(resolverPath); os.IsNotExist(err) {
-				if err := ioutil.WriteFile(resolverPath, templates.MustAsset("resolver.go.tpl"), 644); err != nil {
+				if err := ioutil.WriteFile(resolverPath, templates.MustAsset("resolver.go.tpl"), 0644); err != nil {
 					return err
 				}
 			}

@@ -2,9 +2,11 @@
 
 This modul allows the usage of GraphQL services in your Flamingo project.
 
-Please see `example/` on how this works.
+## Example
+The module contains a working example that you can try out yourself. 
+See https://github.com/i-love-flamingo/graphql/tree/master/example
 
-## Setup
+## Setup Graphql in your Flamingo project
 
 Add the `graphql.Module` to your projects modules.
 
@@ -38,9 +40,21 @@ See the `example` folder for a complete example on how to use `flamingo.me/graph
 
 The next thing you need to do is to add Resolver to the file `resolver.go`:
 
-## Resolver
+### Resolver and Modifier
 
 Everything needs to be resolved, unless `gqlgen` can figure something out on its own.
-Best practive here is to provide default resolvers in your code, which can be used via embedding.
 
-See `example/user` for an example UserQuery resolver.
+Best practive here is to provide default resolvers in your code, which can be used via embedding.
+See [`example/user`](https://github.com/i-love-flamingo/graphql/blob/master/example/user/interfaces/graphql/resolver.go) for an example UserQuery resolver.
+
+### Suggested Naming Conventions
+
+We recommend to namespace your Types and Type extensions with the Project name. 
+For Flamingo Core Framework GraphQL Schema we use the prefix `Core_` and for Flamingo Commerce we use `Commerce_`
+ 
+
+## Resources
+
+Learn GraphQL: https://graphql.org/learn/
+
+GraphQL Specification: https://graphql.github.io/graphql-spec/June2018/#sec-Schema

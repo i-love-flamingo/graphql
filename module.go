@@ -35,13 +35,18 @@ type routes struct {
 }
 
 // Inject executable schema
-func (r *routes) Inject(config *struct {
-	Exec      graphql.ExecutableSchema `inject:",optional"`
-	Whitelist flamingoConfig.Slice     `inject:"config:graphql.cors.whitelist"`
-}, reverseRouter web.ReverseRouter) {
-	r.exec = config.Exec
+func (r *routes) Inject(
+	reverseRouter web.ReverseRouter,
+	config *struct {
+		Exec      graphql.ExecutableSchema `inject:",optional"`
+		Whitelist flamingoConfig.Slice     `inject:"config:graphql.cors.whitelist"`
+	},
+) {
 	r.reverseRouter = reverseRouter
-	r.whitelist = config.Whitelist
+	if config != nil {
+		r.exec = config.Exec
+		r.whitelist = config.Whitelist
+	}
 }
 
 // Routes definition for flamingo router

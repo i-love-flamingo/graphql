@@ -29,23 +29,26 @@ func (*Module) Configure(injector *dingo.Injector) {
 }
 
 type routes struct {
-	exec          graphql.ExecutableSchema
-	reverseRouter web.ReverseRouter
-	whitelist     flamingoConfig.Slice
+	exec                 graphql.ExecutableSchema
+	reverseRouter        web.ReverseRouter
+	whitelist            flamingoConfig.Slice
+	introspectionEnabled bool
 }
 
 // Inject executable schema
 func (r *routes) Inject(
 	reverseRouter web.ReverseRouter,
 	config *struct {
-		Exec      graphql.ExecutableSchema `inject:",optional"`
-		Whitelist flamingoConfig.Slice     `inject:"config:graphql.cors.whitelist"`
+		Exec                 graphql.ExecutableSchema `inject:",optional"`
+		Whitelist            flamingoConfig.Slice     `inject:"config:graphql.cors.whitelist"`
+		IntrospectionEnabled bool                     `inject:"config:graphql.introspectionEnabled,optional"`
 	},
 ) {
 	r.reverseRouter = reverseRouter
 	if config != nil {
 		r.exec = config.Exec
 		r.whitelist = config.Whitelist
+		r.introspectionEnabled = config.IntrospectionEnabled
 	}
 }
 
@@ -62,9 +65,25 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 
 	registry.Route("/graphql", "graphql")
 	registry.HandleOptions("graphql", web.WrapHTTPHandler(corsHandler.preflightHandler()))
-	registry.HandleAny("graphql", web.WrapHTTPHandler(corsHandler.gqlMiddleware(handler.GraphQL(r.exec))))
+	registry.HandleAny("graphql",
+		web.WrapHTTPHandler(
+			corsHandler.gqlMiddleware(
+				handler.GraphQL(
+					r.exec,
+					handler.IntrospectionEnabled(r.introspectionEnabled),
+				),
+			),
+		),
+	)
 
 	registry.Route("/graphql-console", "graphql.console")
 	u, _ := r.reverseRouter.Relative("graphql", nil)
 	registry.HandleAny("graphql.console", web.WrapHTTPHandler(handler.Playground("Flamingo GraphQL Console", u.String())))
+}
+
+// DefaultConfig for this module
+func (m *Module) DefaultConfig() flamingoConfig.Map {
+	return flamingoConfig.Map{
+		"graphql.introspectionEnabled": false,
+	}
 }

@@ -5,12 +5,12 @@ import (
 )
 
 type corsHandler struct {
-	whitelist []string
+	origins []string
 }
 
 func (h *corsHandler) validateOrigin(origin string) bool {
-	for _, whitelistEntry := range h.whitelist {
-		if whitelistEntry == origin || whitelistEntry == "*" {
+	for _, allowedOrigin := range h.origins {
+		if allowedOrigin == origin || allowedOrigin == "*" {
 			return true
 		}
 	}

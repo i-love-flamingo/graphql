@@ -1,0 +1,13 @@
+
+type Team {
+	name: String!
+	bla: String!
+}
+
+extend type User {
+	team: Team
+}
+
+#extend type Query {
+#	teams: [Team!]
+#}

@@ -47,10 +47,11 @@ extend type Mutation {
 }
 
 // Models mapping between graphql and go
-func (*service) Models() map[string]config.TypeMapEntry {
-	return graphql.ModelMap{
-		"Todo": domain.Todo{},
-	}.Models()
+func (*service) Types(types *graphql.Types) {
+	types.Map("Todo", domain.Todo{})
+	config.Resolve("User", "todos", UserResolver{}, "Todos")
+	config.Resolve("Mutation", "TodoAdd", MutationResolver{}, "TodoAdd")
+	config.Resolve("Mutation", "TodoDone", MutationResolver{}, "TodoDone")
 }
 
 // Module struct for the todo module

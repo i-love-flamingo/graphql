@@ -3,51 +3,54 @@ package graphql // import "flamingo.me/graphql"
 import (
 	"context"
 	"reflect"
-
-	"github.com/99designs/gqlgen/codegen/config"
 )
 
-// ModelMap is a helper to quickly create map[string]TypeMapEntry for graphql type mappings.
-type ModelMap map[string]interface{}
-
-// Models creates the references via reflection
-func (m ModelMap) Models() map[string]config.TypeMapEntry {
-	res := make(map[string]config.TypeMapEntry, len(m))
-	for k, v := range m {
-		switch v := v.(type) {
-		case ModelMapEntry:
-			t := reflect.TypeOf(v.Type)
-			if t.Kind() == reflect.Ptr {
-				t = t.Elem()
-			}
-
-			fields := make(map[string]config.TypeMapField, len(v.Fields))
-			for k, v := range v.Fields {
-				fields[k] = config.TypeMapField{FieldName: v}
-			}
-
-			res[k] = config.TypeMapEntry{
-				Model:  []string{t.PkgPath() + "." + t.Name()},
-				Fields: fields,
-			}
-
-		default:
-			t := reflect.TypeOf(v)
-			if t.Kind() == reflect.Ptr {
-				t = t.Elem()
-			}
-			res[k] = config.TypeMapEntry{
-				Model: []string{t.PkgPath() + "." + t.Name()},
-			}
-		}
-	}
-	return res
+// Types represent information on Object->Go type mappings and resolvers
+type Types struct {
+	names    map[string]string
+	resolver map[string]map[string][3]string
+	fields   map[string]map[string]string
 }
 
-// ModelMapEntry can be used to create a more detailed ModelMap.
-type ModelMapEntry struct {
-	Type   interface{}
-	Fields map[string]string
+// Map references a graphql type to a go type
+func (tc *Types) Map(graphqlType string, goType interface{}) {
+	t := reflect.TypeOf(goType)
+	for t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+
+	if tc.names == nil {
+		tc.names = make(map[string]string)
+	}
+
+	tc.names[graphqlType] = t.PkgPath() + "." + t.Name()
+}
+
+// Resolve sets a resolver on a graphqlType's graphqlField to a method of a go type
+func (tc *Types) Resolve(graphqlType, graphqlField string, typ interface{}, method string) {
+	if tc.resolver == nil {
+		tc.resolver = make(map[string]map[string][3]string)
+	}
+	if tc.resolver[graphqlType] == nil {
+		tc.resolver[graphqlType] = make(map[string][3]string)
+	}
+
+	t := reflect.TypeOf(typ)
+	for t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	tc.resolver[graphqlType][graphqlField] = [3]string{t.PkgPath(), t.Name(), method}
+}
+
+// GoField sets a map to find the correct go field of an object
+func (tc *Types) GoField(graphqlType, graphqlField, goField string) {
+	if tc.fields == nil {
+		tc.fields = make(map[string]map[string]string)
+	}
+	if tc.fields[graphqlType] == nil {
+		tc.fields[graphqlType] = make(map[string]string)
+	}
+	tc.fields[graphqlType][graphqlField] = goField
 }
 
 // FlamingoQueryResolver always resolves to the string "flamingo" for the default schemas.

@@ -1,21 +1,25 @@
 package graphql // import "flamingo.me/graphql"
 
-//go:generate go run github.com/go-bindata/go-bindata/go-bindata -nometadata -prefix templates/ -o templates/fs.go -pkg templates -ignore=fs.go templates/
+//go:generate go run github.com/go-bindata/go-bindata/v3/go-bindata -nometadata -prefix templates/ -o templates/fs.go -pkg templates -ignore=fs.go templates/
 
 import (
 	"flamingo.me/dingo"
 	flamingoConfig "flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
-	"github.com/99designs/gqlgen/codegen/config"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/handler"
 	"github.com/spf13/cobra"
+
+	// keep depedency from cleaning up
+	_ "github.com/go-bindata/go-bindata/v3"
 )
 
-// Service defines the bind point for graphql services
+// Service defines the interface for graphql services
+// The Schema returns the GraphQL Schema definition
+// The Types configure the GraphQL type mapping and resolution
 type Service interface {
 	Schema() []byte
-	Models() map[string]config.TypeMapEntry
+	Types(types *Types)
 }
 
 // Module defines the graphql entry point and binds the graphql command and routes
@@ -31,7 +35,7 @@ func (*Module) Configure(injector *dingo.Injector) {
 type routes struct {
 	exec                 graphql.ExecutableSchema
 	reverseRouter        web.ReverseRouter
-	whitelist            flamingoConfig.Slice
+	origins              flamingoConfig.Slice
 	introspectionEnabled bool
 }
 
@@ -40,14 +44,14 @@ func (r *routes) Inject(
 	reverseRouter web.ReverseRouter,
 	config *struct {
 		Exec                 graphql.ExecutableSchema `inject:",optional"`
-		Whitelist            flamingoConfig.Slice     `inject:"config:graphql.cors.whitelist"`
+		Origins              flamingoConfig.Slice     `inject:"config:graphql.cors.origins"`
 		IntrospectionEnabled bool                     `inject:"config:graphql.introspectionEnabled,optional"`
 	},
 ) {
 	r.reverseRouter = reverseRouter
 	if config != nil {
 		r.exec = config.Exec
-		r.whitelist = config.Whitelist
+		r.origins = config.Origins
 		r.introspectionEnabled = config.IntrospectionEnabled
 	}
 }
@@ -58,12 +62,12 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 		panic("Please register/generate a schema module before running the server!")
 	}
 
-	var whitelist []string
-	r.whitelist.MapInto(&whitelist)
+	var origins []string
+	r.origins.MapInto(&origins)
 
-	corsHandler := corsHandler{whitelist: whitelist}
+	corsHandler := corsHandler{origins: origins}
 
-	registry.Route("/graphql", "graphql")
+	registry.MustRoute("/graphql", "graphql")
 	registry.HandleOptions("graphql", web.WrapHTTPHandler(corsHandler.preflightHandler()))
 	registry.HandleAny("graphql",
 		web.WrapHTTPHandler(
@@ -76,7 +80,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 		),
 	)
 
-	registry.Route("/graphql-console", "graphql.console")
+	registry.MustRoute("/graphql-console", "graphql.console")
 	u, _ := r.reverseRouter.Relative("graphql", nil)
 	registry.HandleAny("graphql.console", web.WrapHTTPHandler(handler.Playground("Flamingo GraphQL Console", u.String())))
 }

@@ -14,5 +14,8 @@ func (us *UserServiceImpl) UserByID(ctx context.Context, id string) (*domain.Use
 	return &domain.User{
 		Name:      "User " + id,
 		Nicknames: []string{"nick", id},
+		Attributes: map[string]interface{}{
+			"movie": "starwars",
+		},
 	}, nil
 }

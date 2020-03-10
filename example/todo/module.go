@@ -5,7 +5,6 @@ import (
 	"flamingo.me/graphql"
 	"flamingo.me/graphql/example/todo/domain"
 	"flamingo.me/graphql/example/user"
-	"github.com/99designs/gqlgen/codegen/config"
 )
 
 // Service for the todo graphql service
@@ -32,11 +31,12 @@ extend type Mutation {
 `)
 }
 
-// Models mapping between graphql and go
-func (*Service) Models() map[string]config.TypeMapEntry {
-	return graphql.ModelMap{
-		"Todo": domain.Todo{},
-	}.Models()
+// Types define the mappings and resolvers for Todos
+func (*Service) Types(config *graphql.Types) {
+	config.Map("Todo", domain.Todo{})
+	config.Resolve("User", "todos", UserResolver{}, "Todos")
+	config.Resolve("Mutation", "TodoAdd", MutationResolver{}, "TodoAdd")
+	config.Resolve("Mutation", "TodoDone", MutationResolver{}, "TodoDone")
 }
 
 // Module struct for the todo module

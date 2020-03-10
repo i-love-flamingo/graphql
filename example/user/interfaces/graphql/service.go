@@ -3,10 +3,9 @@ package graphql
 import (
 	"flamingo.me/graphql"
 	"flamingo.me/graphql/example/user/domain"
-	"github.com/99designs/gqlgen/codegen/config"
 )
 
-//go:generate go run github.com/go-bindata/go-bindata/go-bindata -nometadata -o fs.go -pkg graphql schema.graphql
+//go:generate go run github.com/go-bindata/go-bindata/v3/go-bindata -nometadata -o fs.go -pkg graphql schema.graphql
 
 // Service service for graphql
 type Service struct{}
@@ -16,9 +15,9 @@ func (*Service) Schema() []byte {
 	return MustAsset("schema.graphql")
 }
 
-// Models map associations between graphql and go
-func (*Service) Models() map[string]config.TypeMapEntry {
-	return graphql.ModelMap{
-		"User": domain.User{},
-	}.Models()
+// Types set up the GraphQL to Go Type mappings
+func (*Service) Types(config *graphql.Types) {
+	config.Map("User", domain.User{})
+	config.Map("User_Attributes", domain.Attributes{})
+	config.Resolve("Query", "User", UserQueryResolver{}, "User")
 }

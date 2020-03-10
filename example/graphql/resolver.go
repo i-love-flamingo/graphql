@@ -12,13 +12,13 @@ import (
 // it will not be regenerated!
 
 type rootResolver struct {
-	todoUserResolver *todo.TodoUserResolver
+	todoUserResolver *todo.UserResolver
 	queryResolver    *queryResolver
 	mutationResolver *mutationResolver
 }
 
 func (r *rootResolver) Inject(
-	todoUserResolver *todo.TodoUserResolver,
+	todoUserResolver *todo.UserResolver,
 	queryResolver *queryResolver,
 	mutationResolver *mutationResolver,
 ) *rootResolver {
@@ -55,10 +55,10 @@ func (r *queryResolver) Inject(flamingoQueryResolver *graphql.FlamingoQueryResol
 
 type mutationResolver struct {
 	*graphql.FlamingoQueryResolver
-	*todo.TodoMutationResolver
+	*todo.MutationResolver
 }
 
-func (r *mutationResolver) Inject(flamingoQueryResolver *graphql.FlamingoQueryResolver, resolver *todo.TodoMutationResolver) {
+func (r *mutationResolver) Inject(flamingoQueryResolver *graphql.FlamingoQueryResolver, resolver *todo.MutationResolver) {
 	r.FlamingoQueryResolver = flamingoQueryResolver
-	r.TodoMutationResolver = resolver
+	r.MutationResolver = resolver
 }

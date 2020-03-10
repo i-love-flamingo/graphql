@@ -8,8 +8,10 @@ import (
 	"github.com/99designs/gqlgen/codegen/config"
 )
 
+// Service for the todo graphql service
 type Service struct{}
 
+// Schema getter for graphql
 func (*Service) Schema() []byte {
 	// language=graphql
 	return []byte(`
@@ -30,18 +32,22 @@ extend type Mutation {
 `)
 }
 
+// Models mapping between graphql and go
 func (*Service) Models() map[string]config.TypeMapEntry {
 	return graphql.ModelMap{
 		"Todo": domain.Todo{},
 	}.Models()
 }
 
+// Module struct for the todo module
 type Module struct{}
 
+// Configure registers the service graphql service
 func (Module) Configure(injector *dingo.Injector) {
 	injector.BindMulti(new(graphql.Service)).To(new(Service))
 }
 
+// Depends marks for the user Module
 func (*Module) Depends() []dingo.Module {
 	return []dingo.Module{
 		new(user.Module),

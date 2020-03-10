@@ -45,7 +45,7 @@ func TestMarshaller(t *testing.T) {
 	}
 
 	_, err = UnmarshalFloat("test")
-	if err == nil || err.Error() != "syntax error scanning number" {
+	if err == nil {
 		t.Error("invalid float error fails")
 	}
 }

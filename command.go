@@ -32,6 +32,7 @@ func command(
 	}
 }
 
+// Generate runs the graphql generation for the defined services
 func Generate(services []Service, basePath string, schemaBasePath string) error {
 	schemaPath := path.Join(schemaBasePath, "schema.graphql")
 

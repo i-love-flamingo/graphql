@@ -6,6 +6,69 @@ This modul allows the usage of GraphQL services in your Flamingo project.
 The module contains a working example that you can try out yourself. 
 See https://github.com/i-love-flamingo/graphql/tree/master/example
 
+## Use Graphql in your Flaming project
+
+Create a new Module and bind a `graphql.Service`.
+
+The service has both the Schema and Model-Mapping information.
+
+It also makes sense to declare `graphql.Module` as a direct dependency from your model:
+```go
+package todo
+
+import (
+	"flamingo.me/dingo"
+	"flamingo.me/graphql"
+	"flamingo.me/graphql/example/todo/domain"
+	"flamingo.me/graphql/example/user"
+	"github.com/99designs/gqlgen/codegen/config"
+)
+
+// Service for the todo graphql service
+type service struct{}
+
+// Schema getter for graphql
+func (*service) Schema() []byte {
+	// language=graphql
+	return []byte(`
+type Todo {
+	id: ID!
+	task: String!
+	done: Boolean!
+}
+extend type User {
+	todos: [Todo]
+}
+extend type Mutation {
+	TodoAdd(user: ID!, task: String!): Todo
+	TodoDone(todo: ID!, done: Boolean!): Todo
+}
+`)
+}
+
+// Models mapping between graphql and go
+func (*service) Models() map[string]config.TypeMapEntry {
+	return graphql.ModelMap{
+		"Todo": domain.Todo{},
+	}.Models()
+}
+
+// Module struct for the todo module
+type Module struct{}
+
+// Configure registers the service graphql service
+func (Module) Configure(injector *dingo.Injector) {
+	injector.BindMulti(new(graphql.Service)).To(new(service))
+}
+
+// Depends marks dependency to the graphql Module
+func (*Module) Depends() []dingo.Module {
+	return []dingo.Module{
+		new(graphql.Module),
+	}
+}
+```
+
 ## Setup Graphql in your Flamingo project
 
 Add the `graphql.Module` to your projects modules.

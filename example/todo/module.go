@@ -32,11 +32,11 @@ extend type Mutation {
 }
 
 // Types define the mappings and resolvers for Todos
-func (*Service) Types(config *graphql.Types) {
-	config.Map("Todo", domain.Todo{})
-	config.Resolve("User", "todos", UserResolver{}, "Todos")
-	config.Resolve("Mutation", "TodoAdd", MutationResolver{}, "TodoAdd")
-	config.Resolve("Mutation", "TodoDone", MutationResolver{}, "TodoDone")
+func (*Service) Types(types *graphql.Types) {
+	types.Map("Todo", domain.Todo{})
+	types.Resolve("User", "todos", UserResolver{}, "Todos")
+	types.Resolve("Mutation", "TodoAdd", MutationResolver{}, "TodoAdd")
+	types.Resolve("Mutation", "TodoDone", MutationResolver{}, "TodoDone")
 }
 
 // Module struct for the todo module

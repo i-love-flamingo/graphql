@@ -145,6 +145,12 @@ func (m *plugin) MutateConfig(_ *config.Config) error {
 }
 
 func (m *plugin) GenerateCode(data *codegen.Data) error {
+	errored := false
+	defer func() {
+		if errored {
+			panic("code generation failed")
+		}
+	}()
 	return gqltemplates.Render(gqltemplates.Options{
 		PackageName: "graphql",
 		Filename:    "graphql/resolver.go",
@@ -155,9 +161,17 @@ func (m *plugin) GenerateCode(data *codegen.Data) error {
 		GeneratedHeader: true,
 		Packages:        data.Config.Packages,
 		Funcs: template.FuncMap{
-			"gpkg": func(from, to string) string {
+			"gpkg": func(from, to string, field codegen.Field) string {
 				if m.types.resolver[from][to][0] == "" {
-					panic(fmt.Sprintf("missing resolver for %q.%q", from, to))
+					fmt.Printf(
+						"\nmissing resolver for %q.%q:\n\tfunc (r *%sResolver) %s%s\n\n\ttypes.Resolve(\"%s\", \"%s\", %sResolver{}, \"%s\")\n\n",
+						from, to,
+						gqltemplates.UcFirst(from), gqltemplates.UcFirst(to),
+						field.ShortResolverDeclaration(),
+						from, to,
+						gqltemplates.UcFirst(from), gqltemplates.UcFirst(to),
+					)
+					errored = true
 				}
 				return m.types.resolver[from][to][0]
 			},
@@ -231,7 +245,7 @@ func (r *{{$root.TypeName}}) Inject (
 		func (r *{{lcFirst $root.TypeName}}{{$object.Name}}) Inject(
 			{{- range $field := $object.Fields }}
 				{{- if $field.IsResolver }}
-					{{lcFirst $object.Name}}{{ $field.GoFieldName}} *{{ lookupImport (gpkg $object.Name $field.Name) }}.{{ gtyp $object.Name $field.Name }},
+					{{lcFirst $object.Name}}{{ $field.GoFieldName}} *{{ lookupImport (gpkg $object.Name $field.Name $field) }}.{{ gtyp $object.Name $field.Name }},
 				{{- end -}}
 			{{- end }}
 		) {

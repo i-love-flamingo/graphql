@@ -16,8 +16,8 @@ func (*Service) Schema() []byte {
 }
 
 // Types set up the GraphQL to Go Type mappings
-func (*Service) Types(config *graphql.Types) {
-	config.Map("User", domain.User{})
-	config.Map("User_Attributes", domain.Attributes{})
-	config.Resolve("Query", "User", UserQueryResolver{}, "User")
+func (*Service) Types(types *graphql.Types) {
+	types.Map("User", domain.User{})
+	types.Map("User_Attributes", domain.Attributes{})
+	types.Resolve("Query", "User", UserQueryResolver{}, "User")
 }

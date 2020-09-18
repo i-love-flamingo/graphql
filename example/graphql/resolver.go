@@ -101,3 +101,14 @@ func (r *rootResolverUser) Inject(
 func (r *rootResolverUser) Todos(ctx context.Context, obj *domain1.User) ([]*domain.Todo, error) {
 	return r.resolveTodos(ctx, obj)
 }
+
+func direct(root *rootResolver) map[string]interface{} {
+	return map[string]interface{}{
+		"Mutation.Flamingo": root.Mutation().Flamingo,
+		"Mutation.TodoAdd":  root.Mutation().TodoAdd,
+		"Mutation.TodoDone": root.Mutation().TodoDone,
+		"Query.Flamingo":    root.Query().Flamingo,
+		"Query.User":        root.Query().User,
+		"User.Todos":        root.User().Todos,
+	}
+}

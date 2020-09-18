@@ -192,6 +192,7 @@ func (m *plugin) GenerateCode(data *codegen.Data) error {
 {{ reserveImport "sync"  }}
 {{ reserveImport "errors"  }}
 {{ reserveImport "bytes"  }}
+{{ reserveImport "log"  }}
 
 {{ reserveImport "github.com/vektah/gqlparser/v2" }}
 {{ reserveImport "github.com/vektah/gqlparser/v2/ast" }}
@@ -270,6 +271,20 @@ func (r *{{$root.TypeName}}) Inject (
 		{{ end -}}
 	{{ end -}}
 {{ end }}
+
+func direct(root *{{$root.TypeName}}) map[string]interface{} {
+	return map[string]interface{}{
+	{{ range $object := .Objects -}}
+		{{- if $object.HasResolvers -}}
+			{{ range $field := $object.Fields -}}
+				{{- if $field.IsResolver -}}
+					"{{$object.Name}}.{{$field.GoFieldName}}": root.{{$object.Name}}().{{$field.GoFieldName}},
+				{{ end -}}
+			{{ end -}}
+		{{ end -}}
+	{{ end }}
+	}
+}
 `,
 	})
 }

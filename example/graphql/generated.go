@@ -292,8 +292,7 @@ var sources = []*ast.Source{
 type Mutation { flamingo: String }
 scalar Time
 scalar Map
-scalar Date
-scalar DateTime`, BuiltIn: false},
+scalar Date`, BuiltIn: false},
 	{Name: "graphql/schema/flamingo.me_graphql_example_user_interfaces_graphql-Service.graphql", Input: `type User {
     name: String!
     nicknames: [String!]

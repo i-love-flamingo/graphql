@@ -8,7 +8,6 @@ require (
 	github.com/99designs/gqlgen v0.11.4-0.20200726064323-39a12e0f1b6d
 	github.com/go-bindata/go-bindata/v3 v3.1.4-0.20200620005137-771f8d80059e
 	github.com/kisielk/errcheck v1.4.0 // indirect
-	github.com/nrfta/go-graphql-scalars v0.2.0 // indirect
 	github.com/spf13/cobra v0.0.6
 	github.com/vektah/gqlparser/v2 v2.0.1
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect

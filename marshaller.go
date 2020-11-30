@@ -1,10 +1,13 @@
-package graphql // import "flamingo.me/graphql"
+package graphql
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"math/big"
+	"strconv"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 )
@@ -12,7 +15,7 @@ import (
 // MarshalFloat for graphql Float scalars to be compatible with big.Float
 func MarshalFloat(f big.Float) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
-		io.WriteString(w, f.String())
+		_, _ = io.WriteString(w, f.String())
 	})
 }
 
@@ -40,4 +43,23 @@ func UnmarshalFloat(v interface{}) (big.Float, error) {
 	default:
 		return big.Float{}, fmt.Errorf("%T is not an float", v)
 	}
+}
+
+// MarshalDate marshals time.Time inf form of YYYY-MM-DD
+func MarshalDate(t time.Time) graphql.Marshaler {
+	if t.IsZero() {
+		return graphql.Null
+	}
+
+	return graphql.WriterFunc(func(w io.Writer) {
+		_, _ = io.WriteString(w, strconv.Quote(t.Format("2006-01-02")))
+	})
+}
+
+// UnmarshalDate unmarshals YYYY-MM-DD to time.Time
+func UnmarshalDate(v interface{}) (time.Time, error) {
+	if tmpStr, ok := v.(string); ok {
+		return time.Parse("2006-01-02", tmpStr)
+	}
+	return time.Time{}, errors.New("date should be a string")
 }

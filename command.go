@@ -113,6 +113,10 @@ func Generate(services []Service, basePath string, schemaBasePath string) error 
 	float.Model = append(float.Model, "flamingo.me/graphql.Float", "github.com/99designs/gqlgen/graphql.Float")
 	cfg.Models["Float"] = float
 
+	cfg.Models["Date"] = config.TypeMapEntry{
+		Model: []string{"flamingo.me/graphql.Date"},
+	}
+
 	cfg.Model = config.PackageConfig{}
 	cfg.Exec = config.PackageConfig{Filename: path.Join(basePath, "generated.go")}
 

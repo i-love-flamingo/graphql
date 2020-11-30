@@ -291,7 +291,8 @@ var sources = []*ast.Source{
 	{Name: "graphql/schema/schema.graphql", Input: `type Query { flamingo: String }
 type Mutation { flamingo: String }
 scalar Time
-scalar Map`, BuiltIn: false},
+scalar Map
+scalar Date`, BuiltIn: false},
 	{Name: "graphql/schema/flamingo.me_graphql_example_user_interfaces_graphql-Service.graphql", Input: `type User {
     name: String!
     nicknames: [String!]

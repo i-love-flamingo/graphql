@@ -59,6 +59,9 @@ func MarshalDate(t time.Time) graphql.Marshaler {
 // UnmarshalDate unmarshals YYYY-MM-DD to time.Time
 func UnmarshalDate(v interface{}) (time.Time, error) {
 	if tmpStr, ok := v.(string); ok {
+		if len(tmpStr) == 0 {
+			return time.Time{}, nil
+		}
 		return time.Parse("2006-01-02", tmpStr)
 	}
 	return time.Time{}, errors.New("date should be a string")

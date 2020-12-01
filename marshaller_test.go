@@ -88,4 +88,13 @@ func TestMarshaller(t *testing.T) {
 	if err == nil {
 		t.Error("Unmarshal of invalid date type should lead to an error")
 	}
+
+	date, err = UnmarshalDate("")
+	if err != nil {
+		t.Fatal("Unmarshal of empty string should work")
+	}
+
+	if !date.Equal(time.Time{}) {
+		t.Fatal("Date should be empty time")
+	}
 }

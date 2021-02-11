@@ -10,7 +10,7 @@ import (
 	"github.com/99designs/gqlgen/handler"
 	"github.com/spf13/cobra"
 
-	// keep depedency from cleaning up
+	// keep dependency from cleaning up
 	_ "github.com/go-bindata/go-bindata/v3"
 )
 

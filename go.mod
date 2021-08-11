@@ -1,6 +1,6 @@
 module flamingo.me/graphql
 
-go 1.14
+go 1.15
 
 require (
 	flamingo.me/dingo v0.2.9

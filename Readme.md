@@ -1,6 +1,6 @@
 # Flamingo GraphQL
 
-This modul allows the usage of GraphQL services in your Flamingo project.
+This module allows the usage of GraphQL services in your Flamingo project.
 
 ## Example
 The module contains a working example that you can try out yourself. 
@@ -46,7 +46,7 @@ extend type Mutation {
 `)
 }
 
-// Models mapping between graphql and go
+// Types mapping between graphql and go
 func (*service) Types(types *graphql.Types) {
 	types.Map("Todo", domain.Todo{})
 	config.Resolve("User", "todos", UserResolver{}, "Todos")
@@ -108,7 +108,7 @@ The next thing you need to do is to add Resolver to the file `resolver.go`:
 
 Everything needs to be resolved, unless `gqlgen` can figure something out on its own.
 
-Best practive here is to provide default resolvers in your code, which can be used via embedding.
+Best practice here is to provide default resolvers in your code, which can be used via embedding.
 See [`example/user`](https://github.com/i-love-flamingo/graphql/blob/master/example/user/interfaces/graphql/resolver.go) for an example UserQuery resolver.
 
 ### Suggested Naming Conventions

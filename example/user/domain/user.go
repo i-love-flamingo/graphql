@@ -17,7 +17,7 @@ type UserService interface {
 	UserByID(ctx context.Context, id string) (*User, error)
 }
 
-// Get returns an attribute by it's key
+// Get returns an attribute by its key
 func (a Attributes) Get(key string) string {
 	return a[key].(string)
 }

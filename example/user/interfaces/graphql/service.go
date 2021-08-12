@@ -7,7 +7,7 @@ import (
 
 //go:generate go run github.com/go-bindata/go-bindata/v3/go-bindata -nometadata -o fs.go -pkg graphql schema.graphql
 
-// Service service for graphql
+// Service for graphql
 type Service struct{}
 
 // Schema defines the graphql schema

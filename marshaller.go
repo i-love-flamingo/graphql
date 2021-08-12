@@ -41,7 +41,7 @@ func UnmarshalFloat(v interface{}) (big.Float, error) {
 		}
 		return *f, err
 	default:
-		return big.Float{}, fmt.Errorf("%T is not an float", v)
+		return big.Float{}, fmt.Errorf("%T is not a float", v)
 	}
 }
 
@@ -56,7 +56,7 @@ func MarshalDate(t time.Time) graphql.Marshaler {
 	})
 }
 
-// UnmarshalDate unmarshals YYYY-MM-DD to time.Time
+// UnmarshalDate unmarshalls YYYY-MM-DD to time.Time
 func UnmarshalDate(v interface{}) (time.Time, error) {
 	if tmpStr, ok := v.(string); ok {
 		if len(tmpStr) == 0 {

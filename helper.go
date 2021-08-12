@@ -1,4 +1,4 @@
-package graphql // import "flamingo.me/graphql"
+package graphql
 
 import (
 	"context"

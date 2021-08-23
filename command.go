@@ -1,6 +1,8 @@
 package graphql
 
 import (
+	// enable go:embed
+	_ "embed"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -11,7 +13,6 @@ import (
 	"syscall"
 	"text/template"
 
-	"flamingo.me/graphql/templates"
 	"github.com/99designs/gqlgen/api"
 	"github.com/99designs/gqlgen/codegen"
 	"github.com/99designs/gqlgen/codegen/config"
@@ -24,6 +25,15 @@ const (
 	basePath       = "graphql"
 	schemaBasePath = "graphql/schema"
 )
+
+//go:embed templates/schema.graphql
+var schema []byte
+
+//go:embed templates/module.go.tpl
+var module []byte
+
+//go:embed templates/emptymodule.go.tpl
+var emptyModule []byte
 
 func command(
 	services []Service,
@@ -51,15 +61,15 @@ func Generate(services []Service, basePath string, schemaBasePath string) error 
 		return fmt.Errorf("mkdir %q failed: %w", schemaBasePath, err)
 	}
 
-	if err := ioutil.WriteFile(schemaPath, templates.MustAsset("schema.graphql"), 0644); err != nil {
+	if err := ioutil.WriteFile(schemaPath, schema, 0644); err != nil {
 		return fmt.Errorf("writefile %q failed: %w", schemaPath, err)
 	}
 
-	if err := ioutil.WriteFile(path.Join(basePath, "module.go"), templates.MustAsset("module.go.tpl"), 0644); err != nil {
+	if err := ioutil.WriteFile(path.Join(basePath, "module.go"), module, 0644); err != nil {
 		return fmt.Errorf("writefile %q/module.go failed: %w", basePath, err)
 	}
 
-	if err := ioutil.WriteFile(path.Join(basePath, "emptymodule.go"), templates.MustAsset("emptymodule.go.tpl"), 0644); err != nil {
+	if err := ioutil.WriteFile(path.Join(basePath, "emptymodule.go"), emptyModule, 0644); err != nil {
 		return fmt.Errorf("writefile %q/emptymodule.go failed: %w", basePath, err)
 	}
 

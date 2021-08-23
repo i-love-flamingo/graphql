@@ -1,18 +1,22 @@
 package graphql
 
 import (
+	// embed schema.grapqhl
+	_ "embed"
+
 	"flamingo.me/graphql"
 	"flamingo.me/graphql/example/user/domain"
 )
 
-//go:generate go run github.com/go-bindata/go-bindata/v3/go-bindata -nometadata -o fs.go -pkg graphql schema.graphql
+//go:embed schema.graphql
+var schema []byte
 
 // Service for graphql
 type Service struct{}
 
 // Schema defines the graphql schema
 func (*Service) Schema() []byte {
-	return MustAsset("schema.graphql")
+	return schema
 }
 
 // Types set up the GraphQL to Go Type mappings

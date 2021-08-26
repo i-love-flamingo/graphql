@@ -1,7 +1,5 @@
 package graphql
 
-//go:generate go run github.com/go-bindata/go-bindata/v3/go-bindata -nometadata -prefix templates/ -o templates/fs.go -pkg templates -ignore=fs.go templates/
-
 import (
 	"context"
 
@@ -12,9 +10,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/spf13/cobra"
-
-	// keep dependency from cleaning up
-	_ "github.com/go-bindata/go-bindata/v3"
 )
 
 // Service defines the interface for graphql services
@@ -87,9 +82,11 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleAny("graphql.console", web.WrapHTTPHandler(playground.Handler("Flamingo GraphQL Console", u.String())))
 }
 
-// DefaultConfig for this module
-func (m *Module) DefaultConfig() flamingoConfig.Map {
-	return flamingoConfig.Map{
-		"graphql.introspectionEnabled": false,
-	}
+// CueConfig for the module
+func (m *Module) CueConfig() string {
+	return `
+graphql: {
+	introspectionEnabled: bool | *false
+}
+`
 }

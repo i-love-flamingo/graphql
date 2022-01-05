@@ -26,6 +26,8 @@ const (
 	schemaBasePath = "graphql/schema"
 )
 
+var skipGoModTidy = true
+
 //go:embed templates/schema.graphql
 var schema []byte
 
@@ -129,6 +131,7 @@ func Generate(services []Service, basePath string, schemaBasePath string) error 
 
 	cfg.Model = config.PackageConfig{}
 	cfg.Exec = config.PackageConfig{Filename: path.Join(basePath, "generated.go")}
+	cfg.SkipModTidy = skipGoModTidy
 
 	for _, filename := range cfg.SchemaFilename {
 		schemaRaw, err := ioutil.ReadFile(filename)

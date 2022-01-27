@@ -56,6 +56,11 @@ func Generate(services []Service, basePath string, schemaBasePath string) error 
 	schemaPath := path.Join(schemaBasePath, "schema.graphql")
 
 	cfg := config.DefaultConfig()
+	err := config.CompleteConfig(cfg)
+	if err != nil {
+		return err
+	}
+
 	cfg.SchemaFilename = []string{schemaPath}
 	cfg.Models = make(map[string]config.TypeMapEntry)
 

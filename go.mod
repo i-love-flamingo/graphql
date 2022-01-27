@@ -5,7 +5,7 @@ go 1.17
 require (
 	flamingo.me/dingo v0.2.9
 	flamingo.me/flamingo/v3 v3.2.2
-	github.com/99designs/gqlgen v0.15.1
+	github.com/99designs/gqlgen v0.16.0
 	github.com/spf13/cobra v1.2.1
 	github.com/vektah/gqlparser/v2 v2.2.0
 )
@@ -20,6 +20,7 @@ require (
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/cockroachdb/apd/v2 v2.0.1 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -30,6 +31,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/labstack/gommon v0.0.0-20180613044413-d6898124de91 // indirect
+	github.com/matryer/moq v0.2.3 // indirect
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.12 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
@@ -41,8 +43,10 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.9.1 // indirect
 	github.com/prometheus/procfs v0.0.10 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/uber/jaeger-client-go v2.22.1+incompatible // indirect
+	github.com/urfave/cli/v2 v2.3.0 // indirect
 	github.com/zemirco/memorystore v0.0.0-20160308183530-ecd57e5134f6 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect

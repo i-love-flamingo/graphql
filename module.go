@@ -2,14 +2,17 @@ package graphql
 
 import (
 	"context"
-
 	"flamingo.me/dingo"
 	flamingoConfig "flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/lru"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/spf13/cobra"
+	"time"
 )
 
 // Service defines the interface for graphql services
@@ -35,6 +38,7 @@ type routes struct {
 	reverseRouter        web.ReverseRouter
 	origins              flamingoConfig.Slice
 	introspectionEnabled bool
+	uploadMaxSize        int64
 }
 
 // Inject executable schema
@@ -44,6 +48,7 @@ func (r *routes) Inject(
 		Exec                 graphql.ExecutableSchema `inject:",optional"`
 		Origins              flamingoConfig.Slice     `inject:"config:graphql.cors.origins"`
 		IntrospectionEnabled bool                     `inject:"config:graphql.introspectionEnabled,optional"`
+		UploadMaxSize        int64                    `inject:"config:graphql.multipartForm.uploadMaxSize,optional"`
 	},
 ) {
 	r.reverseRouter = reverseRouter
@@ -51,6 +56,7 @@ func (r *routes) Inject(
 		r.exec = config.Exec
 		r.origins = config.Origins
 		r.introspectionEnabled = config.IntrospectionEnabled
+		r.uploadMaxSize = config.UploadMaxSize
 	}
 }
 
@@ -67,7 +73,28 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	}
 
 	corsHandler := corsHandler{origins: origins}
-	gqlHandler := handler.NewDefaultServer(r.exec)
+	gqlHandler := func(es graphql.ExecutableSchema) *handler.Server {
+		srv := handler.New(es)
+
+		srv.AddTransport(transport.Websocket{
+			KeepAlivePingInterval: 10 * time.Second,
+		})
+		srv.AddTransport(transport.Options{})
+		srv.AddTransport(transport.GET{})
+		srv.AddTransport(transport.POST{})
+		srv.AddTransport(transport.MultipartForm{
+			MaxUploadSize: r.uploadMaxSize,
+		})
+		srv.SetQueryCache(lru.New(1000))
+
+		srv.Use(extension.Introspection{})
+		srv.Use(extension.AutomaticPersistedQuery{
+			Cache: lru.New(100),
+		})
+
+		return srv
+	}(r.exec)
+
 	gqlHandler.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
 		graphql.GetOperationContext(ctx).DisableIntrospection = !r.introspectionEnabled
 		return next(ctx)
@@ -87,6 +114,9 @@ func (m *Module) CueConfig() string {
 	return `
 graphql: {
 	introspectionEnabled: bool | *false
+	multipartForm: {
+		uploadMaxSize: (int | *1.5M) & > 0
+	}
 }
 `
 }

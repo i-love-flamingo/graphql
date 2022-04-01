@@ -2,6 +2,8 @@ package graphql
 
 import (
 	"context"
+	"time"
+
 	"flamingo.me/dingo"
 	flamingoConfig "flamingo.me/flamingo/v3/framework/config"
 	"flamingo.me/flamingo/v3/framework/web"
@@ -12,7 +14,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/spf13/cobra"
-	"time"
 )
 
 // Service defines the interface for graphql services

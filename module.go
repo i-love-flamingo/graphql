@@ -103,7 +103,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 
 	registry.MustRoute("/graphql", "graphql")
 	registry.HandleOptions("graphql", web.WrapHTTPHandler(corsHandler.preflightHandler()))
-	registry.HandleAny("graphql", web.WrapHTTPHandler(corsHandler.gqlMiddleware(gqlHandler)))
+	registry.HandleAny("graphql", wrapGqlHandler(corsHandler.gqlMiddleware(gqlHandler)))
 
 	registry.MustRoute("/graphql-console", "graphql.console")
 	u, _ := r.reverseRouter.Relative("graphql", nil)

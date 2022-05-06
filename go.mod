@@ -5,9 +5,9 @@ go 1.17
 require (
 	flamingo.me/dingo v0.2.9
 	flamingo.me/flamingo/v3 v3.3.0
-	github.com/99designs/gqlgen v0.16.0
-	github.com/spf13/cobra v1.3.0
-	github.com/vektah/gqlparser/v2 v2.3.1
+	github.com/99designs/gqlgen v0.17.5
+	github.com/spf13/cobra v1.4.0
+	github.com/vektah/gqlparser/v2 v2.4.2
 )
 
 require (
@@ -15,7 +15,7 @@ require (
 	contrib.go.opencensus.io/exporter/prometheus v0.1.0 // indirect
 	contrib.go.opencensus.io/exporter/zipkin v0.1.1 // indirect
 	cuelang.org/go v0.0.15 // indirect
-	github.com/agnivade/levenshtein v1.1.0 // indirect
+	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -26,7 +26,7 @@ require (
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v1.2.0 // indirect
-	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/labstack/gommon v0.0.0-20180613044413-d6898124de91 // indirect
@@ -57,6 +57,6 @@ require (
 	golang.org/x/tools v0.1.10 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/api v0.62.0 // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
+	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

@@ -5,6 +5,7 @@ package graphql
 import (
 	"bytes"
 	"context"
+	"embed"
 	"errors"
 	"fmt"
 	"strconv"
@@ -288,43 +289,21 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(parsedSchema, parsedSchema.Types[name]), nil
 }
 
+//go:embed "schema/schema.graphql" "schema/flamingo.me_graphql_example_user_interfaces_graphql-Service.graphql" "schema/flamingo.me_graphql_example_todo-Service.graphql"
+var sourcesFS embed.FS
+
+func sourceData(filename string) string {
+	data, err := sourcesFS.ReadFile(filename)
+	if err != nil {
+		panic(fmt.Sprintf("codegen problem: %s not availalbe", filename))
+	}
+	return string(data)
+}
+
 var sources = []*ast.Source{
-	{Name: "graphql/schema/schema.graphql", Input: `type Query { flamingo: String }
-type Mutation { flamingo: String }
-scalar Time
-scalar Map
-scalar Date`, BuiltIn: false},
-	{Name: "graphql/schema/flamingo.me_graphql_example_user_interfaces_graphql-Service.graphql", Input: `type User {
-    name: String!
-    nicknames: [String!]
-    attributes: User_Attributes!
-}
-
-type User_Attributes {
-    keys: [String!]!
-    get(key: String!): String!
-}
-
-extend type Query {
-    User(id: String!): User
-}
-`, BuiltIn: false},
-	{Name: "graphql/schema/flamingo.me_graphql_example_todo-Service.graphql", Input: `
-type Todo {
-	id: ID!
-	task: String!
-	done: Boolean!
-}
-
-extend type User {
-	todos: [Todo]
-}
-
-extend type Mutation {
-	TodoAdd(user: ID!, task: String!): Todo
-	TodoDone(todo: ID!, done: Boolean!): Todo
-}
-`, BuiltIn: false},
+	{Name: "schema/schema.graphql", Input: sourceData("schema/schema.graphql"), BuiltIn: false},
+	{Name: "schema/flamingo.me_graphql_example_user_interfaces_graphql-Service.graphql", Input: sourceData("schema/flamingo.me_graphql_example_user_interfaces_graphql-Service.graphql"), BuiltIn: false},
+	{Name: "schema/flamingo.me_graphql_example_todo-Service.graphql", Input: sourceData("schema/flamingo.me_graphql_example_todo-Service.graphql"), BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)
 

@@ -8,11 +8,11 @@ package graphql
 import (
 	"context"
 
-	graphql1 "flamingo.me/graphql"
+	graphql2 "flamingo.me/graphql"
 	"flamingo.me/graphql/example/todo"
 	"flamingo.me/graphql/example/todo/domain"
 	domain1 "flamingo.me/graphql/example/user/domain"
-	graphql2 "flamingo.me/graphql/example/user/interfaces/graphql"
+	graphql1 "flamingo.me/graphql/example/user/interfaces/graphql"
 )
 
 var _ ResolverRoot = new(rootResolver)
@@ -21,16 +21,28 @@ type rootResolver struct {
 	rootResolverMutation *rootResolverMutation
 	rootResolverQuery    *rootResolverQuery
 	rootResolverUser     *rootResolverUser
+
+	userAttributeFilterResolver *graphql1.UserQueryResolver
 }
 
 func (r *rootResolver) Inject(
 	rootResolverMutation *rootResolverMutation,
 	rootResolverQuery *rootResolverQuery,
 	rootResolverUser *rootResolverUser,
+
+	userAttributeFilterResolver *graphql1.UserQueryResolver,
 ) {
 	r.rootResolverMutation = rootResolverMutation
 	r.rootResolverQuery = rootResolverQuery
 	r.rootResolverUser = rootResolverUser
+
+	r.userAttributeFilterResolver = userAttributeFilterResolver
+}
+
+func (r *rootResolver) directives() DirectiveRoot {
+	return DirectiveRoot{
+		UserAttributeFilter: r.userAttributeFilterResolver.UserAttributeFilter,
+	}
 }
 
 func (r *rootResolver) Mutation() MutationResolver {
@@ -50,7 +62,7 @@ type rootResolverMutation struct {
 }
 
 func (r *rootResolverMutation) Inject(
-	mutationFlamingo *graphql1.FlamingoQueryResolver,
+	mutationFlamingo *graphql2.FlamingoQueryResolver,
 	mutationTodoAdd *todo.MutationResolver,
 	mutationTodoDone *todo.MutationResolver,
 ) {
@@ -75,8 +87,8 @@ type rootResolverQuery struct {
 }
 
 func (r *rootResolverQuery) Inject(
-	queryFlamingo *graphql1.FlamingoQueryResolver,
-	queryUser *graphql2.UserQueryResolver,
+	queryFlamingo *graphql2.FlamingoQueryResolver,
+	queryUser *graphql1.UserQueryResolver,
 ) {
 	r.resolveFlamingo = queryFlamingo.Flamingo
 	r.resolveUser = queryUser.User

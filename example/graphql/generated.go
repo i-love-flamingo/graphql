@@ -44,6 +44,7 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
+	UserAttributeFilter func(ctx context.Context, obj interface{}, next graphql.Resolver, prefix string) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
@@ -310,6 +311,21 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) dir_userAttributeFilter_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["prefix"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("prefix"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["prefix"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_TodoAdd_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -1065,8 +1081,32 @@ func (ec *executionContext) _User_attributes(ctx context.Context, field graphql.
 		}
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Attributes, nil
+		directive0 := func(rctx context.Context) (interface{}, error) {
+			ctx = rctx // use context from middleware stack in children
+			return obj.Attributes, nil
+		}
+		directive1 := func(ctx context.Context) (interface{}, error) {
+			prefix, err := ec.unmarshalNString2string(ctx, "secret")
+			if err != nil {
+				return nil, err
+			}
+			if ec.directives.UserAttributeFilter == nil {
+				return nil, errors.New("directive userAttributeFilter is not implemented")
+			}
+			return ec.directives.UserAttributeFilter(ctx, obj, directive0, prefix)
+		}
+
+		tmp, err := directive1(rctx)
+		if err != nil {
+			return nil, graphql.ErrorOnPath(ctx, err)
+		}
+		if tmp == nil {
+			return nil, nil
+		}
+		if data, ok := tmp.(domain1.Attributes); ok {
+			return data, nil
+		}
+		return nil, fmt.Errorf(`unexpected type %T from directive, should be flamingo.me/graphql/example/user/domain.Attributes`, tmp)
 	})
 	if err != nil {
 		ec.Error(ctx, err)

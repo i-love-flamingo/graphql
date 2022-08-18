@@ -7,7 +7,7 @@ require (
 	flamingo.me/flamingo/v3 v3.3.0
 	github.com/99designs/gqlgen v0.17.13
 	github.com/spf13/cobra v1.5.0
-	github.com/vektah/gqlparser/v2 v2.4.7
+	github.com/vektah/gqlparser/v2 v2.4.8
 )
 
 require (

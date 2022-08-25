@@ -4,7 +4,6 @@ import (
 	// enable go:embed
 	_ "embed"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path"
@@ -68,15 +67,15 @@ func Generate(services []Service, basePath string, schemaBasePath string) error 
 		return fmt.Errorf("mkdir %q failed: %w", schemaBasePath, err)
 	}
 
-	if err := io.WriteFile(schemaPath, schema, 0644); err != nil {
+	if err := os.WriteFile(schemaPath, schema, 0644); err != nil {
 		return fmt.Errorf("writefile %q failed: %w", schemaPath, err)
 	}
 
-	if err := io.WriteFile(path.Join(basePath, "module.go"), module, 0644); err != nil {
+	if err := os.WriteFile(path.Join(basePath, "module.go"), module, 0644); err != nil {
 		return fmt.Errorf("writefile %q/module.go failed: %w", basePath, err)
 	}
 
-	if err := io.WriteFile(path.Join(basePath, "emptymodule.go"), emptyModule, 0644); err != nil {
+	if err := os.WriteFile(path.Join(basePath, "emptymodule.go"), emptyModule, 0644); err != nil {
 		return fmt.Errorf("writefile %q/emptymodule.go failed: %w", basePath, err)
 	}
 
@@ -91,7 +90,7 @@ func Generate(services []Service, basePath string, schemaBasePath string) error 
 		fpath := path.Join(schemaBasePath, fname)
 
 		log.Printf("Writing %s", fname)
-		if err := io.WriteFile(fpath, service.Schema(), 0644); err != nil {
+		if err := os.WriteFile(fpath, service.Schema(), 0644); err != nil {
 			return fmt.Errorf("writefile %q failed: %w", fpath, err)
 		}
 		cfg.SchemaFilename = append(cfg.SchemaFilename, fpath)
@@ -139,7 +138,7 @@ func Generate(services []Service, basePath string, schemaBasePath string) error 
 	cfg.SkipModTidy = skipGoModTidy
 
 	for _, filename := range cfg.SchemaFilename {
-		schemaRaw, err := io.ReadFile(filename)
+		schemaRaw, err := os.ReadFile(filename)
 		if err != nil {
 			return fmt.Errorf("unable to open schema: %w", err)
 		}

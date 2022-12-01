@@ -15,7 +15,8 @@ func (us *UserServiceImpl) UserByID(_ context.Context, id string) (*domain.User,
 		Name:      "User " + id,
 		Nicknames: []string{"nick", id},
 		Attributes: map[string]interface{}{
-			"movie": "starwars",
+			"movie":        "starwars",
+			"secret_crush": "r2d2",
 		},
 	}, nil
 }

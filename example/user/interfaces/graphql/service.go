@@ -1,7 +1,6 @@
 package graphql
 
 import (
-	// embed schema.grapqhl
 	_ "embed"
 
 	"flamingo.me/graphql"
@@ -24,4 +23,6 @@ func (*Service) Types(types *graphql.Types) {
 	types.Map("User", domain.User{})
 	types.Map("User_Attributes", domain.Attributes{})
 	types.Resolve("Query", "User", UserQueryResolver{}, "User")
+
+	types.Directive("@userAttributeFilter", UserQueryResolver{}, "UserAttributeFilter")
 }

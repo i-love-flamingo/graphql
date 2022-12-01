@@ -4,7 +4,9 @@ type User {
     attributes: User_Attributes!
 }
 
-type User_Attributes {
+directive @userAttributeFilter(prefix: String!) on OBJECT
+
+type User_Attributes @userAttributeFilter(prefix: "secret") {
     keys: [String!]!
     get(key: String!): String!
 }

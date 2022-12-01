@@ -202,6 +202,15 @@ func (m *plugin) GenerateCode(data *codegen.Data) error {
 			"gmethod": func(from, to string) string {
 				return m.types.resolver[from][to][2]
 			},
+			"gdpkg": func(name string) string {
+				return m.types.directives["@"+name][0]
+			},
+			"gdtyp": func(name string) string {
+				return m.types.directives["@"+name][1]
+			},
+			"gdmethod": func(name string) string {
+				return m.types.directives["@"+name][2]
+			},
 		},
 		PackageDoc: "//+build !graphql\n",
 		Template: `
@@ -230,6 +239,9 @@ type {{$root.TypeName}} struct {
 			{{lcFirst $root.TypeName}}{{$object.Name}} *{{lcFirst $root.TypeName}}{{$object.Name}}
 		{{- end }}
 	{{- end }}
+	{{ range $directive := .AllDirectives }}
+		{{$directive.Name}}Resolver *{{lookupImport (gdpkg $directive.Name)}}.{{gdtyp $directive.Name}}
+	{{- end }}
 }
 
 func (r *{{$root.TypeName}}) Inject (
@@ -238,12 +250,26 @@ func (r *{{$root.TypeName}}) Inject (
 			{{lcFirst $root.TypeName}}{{$object.Name}} *{{lcFirst $root.TypeName}}{{$object.Name}},
 		{{- end }}
 	{{- end }}
+	{{ range $directive := .AllDirectives }}
+		{{$directive.Name}}Resolver *{{lookupImport (gdpkg $directive.Name)}}.{{gdtyp $directive.Name}},
+	{{- end }}
 ) {
 	{{- range $object := .Objects }}
 		{{- if $object.HasResolvers }}
 			r.{{lcFirst $root.TypeName}}{{$object.Name}} = {{lcFirst $root.TypeName}}{{$object.Name}}
 		{{- end }}
 	{{- end }}
+	{{ range $directive := .AllDirectives }}
+		r.{{$directive.Name}}Resolver = {{$directive.Name}}Resolver
+	{{- end }}
+}
+
+func (r *{{$root.TypeName}}) directives() DirectiveRoot {
+	return DirectiveRoot{
+		{{ range $directive := .AllDirectives -}}
+			{{ucFirst $directive.Name}}: r.{{$directive.Name}}Resolver.{{gdmethod $directive.Name}},
+		{{end}}
+	}
 }
 
 {{ range $object := .Objects -}}

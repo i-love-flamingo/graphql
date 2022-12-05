@@ -40,16 +40,18 @@ type routes struct {
 	origins              flamingoConfig.Slice
 	introspectionEnabled bool
 	uploadMaxSize        int64
+	operationMiddlewares []graphql.OperationMiddleware
 }
 
 // Inject executable schema
 func (r *routes) Inject(
 	reverseRouter web.ReverseRouter,
 	config *struct {
-		Exec                 graphql.ExecutableSchema `inject:",optional"`
-		Origins              flamingoConfig.Slice     `inject:"config:graphql.cors.origins"`
-		IntrospectionEnabled bool                     `inject:"config:graphql.introspectionEnabled,optional"`
-		UploadMaxSize        int64                    `inject:"config:graphql.multipartForm.uploadMaxSize,optional"`
+		Exec                 graphql.ExecutableSchema      `inject:",optional"`
+		OperationMiddlewares []graphql.OperationMiddleware `inject:",optional"`
+		Origins              flamingoConfig.Slice          `inject:"config:graphql.cors.origins"`
+		IntrospectionEnabled bool                          `inject:"config:graphql.introspectionEnabled,optional"`
+		UploadMaxSize        int64                         `inject:"config:graphql.multipartForm.uploadMaxSize,optional"`
 	},
 ) {
 	r.reverseRouter = reverseRouter
@@ -58,6 +60,7 @@ func (r *routes) Inject(
 		r.origins = config.Origins
 		r.introspectionEnabled = config.IntrospectionEnabled
 		r.uploadMaxSize = config.UploadMaxSize
+		r.operationMiddlewares = config.OperationMiddlewares
 	}
 }
 
@@ -100,6 +103,10 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 		graphql.GetOperationContext(ctx).DisableIntrospection = !r.introspectionEnabled
 		return next(ctx)
 	})
+
+	for _, middleware := range r.operationMiddlewares {
+		gqlHandler.AroundOperations(middleware)
+	}
 
 	registry.MustRoute("/graphql", "graphql")
 	registry.HandleOptions("graphql", web.WrapHTTPHandler(corsHandler.preflightHandler()))

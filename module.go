@@ -47,12 +47,12 @@ type routes struct {
 func (r *routes) Inject(
 	reverseRouter web.ReverseRouter,
 	config *struct {
-	Exec                 graphql.ExecutableSchema      `inject:",optional"`
-	OperationMiddlewares []graphql.OperationMiddleware `inject:",optional"`
-	Origins              flamingoConfig.Slice          `inject:"config:graphql.cors.origins"`
-	IntrospectionEnabled bool                          `inject:"config:graphql.introspectionEnabled,optional"`
-	UploadMaxSize        int64                         `inject:"config:graphql.multipartForm.uploadMaxSize,optional"`
-},
+		Exec                 graphql.ExecutableSchema      `inject:",optional"`
+		OperationMiddlewares []graphql.OperationMiddleware `inject:",optional"`
+		Origins              flamingoConfig.Slice          `inject:"config:graphql.cors.origins"`
+		IntrospectionEnabled bool                          `inject:"config:graphql.introspectionEnabled,optional"`
+		UploadMaxSize        int64                         `inject:"config:graphql.multipartForm.uploadMaxSize,optional"`
+	},
 ) {
 	r.reverseRouter = reverseRouter
 	if config != nil {

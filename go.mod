@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	flamingo.me/dingo v0.2.10
-	flamingo.me/flamingo/v3 v3.5.0
+	flamingo.me/flamingo/v3 v3.5.1
 	github.com/99designs/gqlgen v0.17.28
 	github.com/spf13/cobra v1.7.0
 	github.com/vektah/gqlparser/v2 v2.5.1

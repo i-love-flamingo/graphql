@@ -252,10 +252,7 @@ type {{$root.TypeName}} struct {
 		{{- end }}
 	{{- end }}
 	{{ range $directive := .AllDirectives }}
-		{{- if eq (gdtyp $directive.Name) ""}}
-		{{- else }}
 		{{$directive.Name}}Resolver *{{lookupImport (gdpkg $directive.Name)}}.{{gdtyp $directive.Name}}
-		{{- end }}
 	{{- end }}
 }
 

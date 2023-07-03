@@ -16,6 +16,7 @@ import (
 	"github.com/99designs/gqlgen/codegen"
 	"github.com/99designs/gqlgen/codegen/config"
 	gqltemplates "github.com/99designs/gqlgen/codegen/templates"
+	plugin2 "github.com/99designs/gqlgen/plugin"
 	"github.com/spf13/cobra"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -152,6 +153,10 @@ func Generate(services []Service, basePath string, schemaBasePath string) error 
 	return nil
 }
 
+var _ plugin2.CodeGenerator = &plugin{}
+var _ plugin2.ConfigMutator = &plugin{}
+var _ plugin2.Plugin = &plugin{}
+
 type plugin struct {
 	types *Types
 }
@@ -166,6 +171,13 @@ func (m *plugin) MutateConfig(_ *config.Config) error {
 }
 
 func (m *plugin) GenerateCode(data *codegen.Data) error {
+	// Drop directives that can't be resolved, this was needed to ignore the `@defer` directive when generating
+	for name, _ := range data.AllDirectives {
+		if pkg := m.types.directives["@"+name][0]; pkg == "" {
+			delete(data.AllDirectives, name)
+		}
+	}
+
 	errored := false
 	defer func() {
 		if errored {
@@ -240,7 +252,10 @@ type {{$root.TypeName}} struct {
 		{{- end }}
 	{{- end }}
 	{{ range $directive := .AllDirectives }}
+		{{- if eq (gdtyp $directive.Name) ""}}
+		{{- else }}
 		{{$directive.Name}}Resolver *{{lookupImport (gdpkg $directive.Name)}}.{{gdtyp $directive.Name}}
+		{{- end }}
 	{{- end }}
 }
 

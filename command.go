@@ -171,8 +171,8 @@ func (m *plugin) MutateConfig(_ *config.Config) error {
 }
 
 func (m *plugin) GenerateCode(data *codegen.Data) error {
-	// Drop directives that can't be resolved, this was needed to ignore the `@defer` directive when generating
-	for name, _ := range data.AllDirectives {
+	// Drop directives that can't be resolved, this was needed to ignore the `@defer` directive not used by us
+	for name := range data.AllDirectives {
 		if pkg := m.types.directives["@"+name][0]; pkg == "" {
 			delete(data.AllDirectives, name)
 		}

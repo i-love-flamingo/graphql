@@ -1,5 +1,34 @@
 # Changelog
 
+## Version v1.9.1 (2023-07-04)
+
+### Fixes
+
+- **275771:** Fix wishlist limit, update flamingo-om3 (4626b870)
+
+### Ops and CI/CD
+
+- upgrade golangci-lint (#62) (b5f68030)
+
+### Chores and tidying
+
+- **deps:** Update github.com/99designs/gqlgen and github.com/vektah/gqlparser/v2 (#69) (2f089dfe)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.6.1 (#67) (2493e209)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.6.0 (#65) (1537ccfc)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.29 (#64) (941dc812)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.5.1 (#59) (4e75dcc7)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.28 (#58) (2ff9a666)
+- **deps:** update actions/setup-go action to v4 (#60) (1793fc81)
+- **deps:** update module github.com/spf13/cobra to v1.7.0 (#63) (7fcbbe8e)
+- add regex to detect go run/install commands (#61) (f9781620)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.24 (#55) (df2245ba)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.5.0 (#56) (744fe71b)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.22 (#52) (9678ac9e)
+
+### Other
+
+- Bump golang.org/x/net from 0.5.0 to 0.7.0 (#57) (94c33e00)
+
 ## Version v1.9.0 (2022-12-05)
 
 ### Features

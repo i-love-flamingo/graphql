@@ -37,21 +37,25 @@ func (*Module) Configure(injector *dingo.Injector) {
 type routes struct {
 	exec                 graphql.ExecutableSchema
 	reverseRouter        web.ReverseRouter
-	origins              flamingoConfig.Slice
-	introspectionEnabled bool
-	uploadMaxSize        int64
 	operationMiddlewares []graphql.OperationMiddleware
+
+	// configs
+	origins                  flamingoConfig.Slice
+	openCensusTracingEnabled bool
+	introspectionEnabled     bool
+	uploadMaxSize            int64
 }
 
 // Inject executable schema
 func (r *routes) Inject(
 	reverseRouter web.ReverseRouter,
 	config *struct {
-		Exec                 graphql.ExecutableSchema      `inject:",optional"`
-		OperationMiddlewares []graphql.OperationMiddleware `inject:",optional"`
-		Origins              flamingoConfig.Slice          `inject:"config:graphql.cors.origins"`
-		IntrospectionEnabled bool                          `inject:"config:graphql.introspectionEnabled,optional"`
-		UploadMaxSize        int64                         `inject:"config:graphql.multipartForm.uploadMaxSize,optional"`
+		Exec                     graphql.ExecutableSchema      `inject:",optional"`
+		OperationMiddlewares     []graphql.OperationMiddleware `inject:",optional"`
+		Origins                  flamingoConfig.Slice          `inject:"config:graphql.cors.origins"`
+		IntrospectionEnabled     bool                          `inject:"config:graphql.introspectionEnabled,optional"`
+		OpenCensusTracingEnabled bool                          `inject:"config:graphql.openCensusTracingEnabled,optional"`
+		UploadMaxSize            int64                         `inject:"config:graphql.multipartForm.uploadMaxSize,optional"`
 	},
 ) {
 	r.reverseRouter = reverseRouter
@@ -61,6 +65,7 @@ func (r *routes) Inject(
 		r.introspectionEnabled = config.IntrospectionEnabled
 		r.uploadMaxSize = config.UploadMaxSize
 		r.operationMiddlewares = config.OperationMiddlewares
+		r.openCensusTracingEnabled = config.OpenCensusTracingEnabled
 	}
 }
 
@@ -96,6 +101,10 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 			Cache: lru.New(100),
 		})
 
+		if r.openCensusTracingEnabled {
+			srv.Use(&OpenCensusTracingExtension{})
+		}
+
 		return srv
 	}(r.exec)
 
@@ -122,6 +131,7 @@ func (m *Module) CueConfig() string {
 	return `
 graphql: {
 	introspectionEnabled: bool | *false
+	openCensusTracingEnabled: bool | *true
 	multipartForm: {
 		uploadMaxSize: (int | *1.5M) & > 0
 	}

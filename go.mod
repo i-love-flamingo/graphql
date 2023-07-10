@@ -8,6 +8,7 @@ require (
 	github.com/99designs/gqlgen v0.17.34
 	github.com/spf13/cobra v1.7.0
 	github.com/vektah/gqlparser/v2 v2.5.6
+	go.opencensus.io v0.24.0
 )
 
 require (
@@ -45,7 +46,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
 	github.com/zemirco/memorystore v0.0.0-20160308183530-ecd57e5134f6 // indirect
-	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/automaxprocs v1.5.1 // indirect
 	go.uber.org/multierr v1.6.0 // indirect

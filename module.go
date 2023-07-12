@@ -1,7 +1,6 @@
 package graphql
 
 import (
-	"context"
 	"time"
 
 	"flamingo.me/dingo"
@@ -96,10 +95,13 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 		})
 		srv.SetQueryCache(lru.New(1000))
 
-		srv.Use(extension.Introspection{})
 		srv.Use(extension.AutomaticPersistedQuery{
 			Cache: lru.New(100),
 		})
+
+		if r.introspectionEnabled {
+			srv.Use(extension.Introspection{})
+		}
 
 		if r.openCensusTracingEnabled {
 			srv.Use(&OpenCensusTracingExtension{})
@@ -107,11 +109,6 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 
 		return srv
 	}(r.exec)
-
-	gqlHandler.AroundOperations(func(ctx context.Context, next graphql.OperationHandler) graphql.ResponseHandler {
-		graphql.GetOperationContext(ctx).DisableIntrospection = !r.introspectionEnabled
-		return next(ctx)
-	})
 
 	for _, middleware := range r.operationMiddlewares {
 		gqlHandler.AroundOperations(middleware)

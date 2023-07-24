@@ -7,7 +7,7 @@ require (
 	flamingo.me/flamingo/v3 v3.6.1
 	github.com/99designs/gqlgen v0.17.35
 	github.com/spf13/cobra v1.7.0
-	github.com/vektah/gqlparser/v2 v2.5.7
+	github.com/vektah/gqlparser/v2 v2.5.8
 	go.opencensus.io v0.24.0
 )
 

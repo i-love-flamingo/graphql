@@ -1,5 +1,18 @@
 # Changelog
 
+## Version v1.10.0 (2023-07-28)
+
+### Features
+
+- Add basic support for OpenCensus tracing (resolvers only) (#70) (a2dabe9c)
+
+### Chores and tidying
+
+- **deps:** update module github.com/99designs/gqlgen to v0.17.36 (#75) (abfcb3f6)
+- **deps:** update module github.com/vektah/gqlparser/v2 to v2.5.8 (#74) (3016084d)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.35 (#73) (31a7b82d)
+- Disable introspection already in the server, drop obsolete middleware (#72) (dcbd7df3)
+
 ## Version v1.9.1 (2023-07-04)
 
 ### Fixes

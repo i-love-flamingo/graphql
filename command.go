@@ -24,6 +24,9 @@ import (
 const (
 	basePath       = "graphql"
 	schemaBasePath = "graphql/schema"
+
+	filePermission755 = 0755
+	filePermission644 = 0644
 )
 
 var skipGoModTidy = true
@@ -56,28 +59,18 @@ func Generate(services []Service, basePath string, schemaBasePath string) error 
 	schemaPath := path.Join(schemaBasePath, "schema.graphql")
 
 	cfg := config.DefaultConfig()
+
 	err := config.CompleteConfig(cfg)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to complete the config: %w", err)
 	}
 
 	cfg.SchemaFilename = []string{schemaPath}
 	cfg.Models = make(map[string]config.TypeMapEntry)
 
-	if err := os.MkdirAll(schemaBasePath, 0755); err != nil && !os.IsExist(err) {
-		return fmt.Errorf("mkdir %q failed: %w", schemaBasePath, err)
-	}
-
-	if err := os.WriteFile(schemaPath, schema, 0644); err != nil {
-		return fmt.Errorf("writefile %q failed: %w", schemaPath, err)
-	}
-
-	if err := os.WriteFile(path.Join(basePath, "module.go"), module, 0644); err != nil {
-		return fmt.Errorf("writefile %q/module.go failed: %w", basePath, err)
-	}
-
-	if err := os.WriteFile(path.Join(basePath, "emptymodule.go"), emptyModule, 0644); err != nil {
-		return fmt.Errorf("writefile %q/emptymodule.go failed: %w", basePath, err)
+	err = createFiles(schemaBasePath, schemaPath, basePath)
+	if err != nil {
+		return err
 	}
 
 	types := new(Types)
@@ -91,40 +84,17 @@ func Generate(services []Service, basePath string, schemaBasePath string) error 
 		fpath := path.Join(schemaBasePath, fname)
 
 		log.Printf("Writing %s", fname)
-		if err := os.WriteFile(fpath, service.Schema(), 0644); err != nil {
+
+		if err := os.WriteFile(fpath, service.Schema(), filePermission644); err != nil {
 			return fmt.Errorf("writefile %q failed: %w", fpath, err)
 		}
+
 		cfg.SchemaFilename = append(cfg.SchemaFilename, fpath)
 
 		service.Types(types)
 	}
 
-	// merge models into config models
-	for graphqlObject, goType := range types.names {
-		cfg.Models[graphqlObject] = config.TypeMapEntry{Model: []string{goType}}
-	}
-
-	for graphqlObject, fields := range types.fields {
-		for graphqlField, goType := range fields {
-			model := cfg.Models[graphqlObject]
-			if cfg.Models[graphqlObject].Fields == nil {
-				model.Fields = make(map[string]config.TypeMapField)
-			}
-			model.Fields[graphqlField] = config.TypeMapField{FieldName: goType}
-			cfg.Models[graphqlObject] = model
-		}
-	}
-
-	for graphqlObject, resolver := range types.resolver {
-		for graphqlField := range resolver {
-			model := cfg.Models[graphqlObject]
-			if cfg.Models[graphqlObject].Fields == nil {
-				model.Fields = make(map[string]config.TypeMapField)
-			}
-			model.Fields[graphqlField] = config.TypeMapField{Resolver: true}
-			cfg.Models[graphqlObject] = model
-		}
-	}
+	mergeModels(types, cfg)
 
 	float := cfg.Models["Float"]
 	float.Model = append(float.Model, "flamingo.me/graphql.Float", "github.com/99designs/gqlgen/graphql.Float")
@@ -150,7 +120,59 @@ func Generate(services []Service, basePath string, schemaBasePath string) error 
 	if err := api.Generate(cfg, api.AddPlugin(&plugin{types: types})); err != nil {
 		return fmt.Errorf("gqlgen/api.Generate failed: %w", err)
 	}
+
 	return nil
+}
+
+func createFiles(schemaBasePath string, schemaPath string, basePath string) error {
+	if err := os.MkdirAll(schemaBasePath, filePermission755); err != nil && !os.IsExist(err) {
+		return fmt.Errorf("mkdir %q failed: %w", schemaBasePath, err)
+	}
+
+	if err := os.WriteFile(schemaPath, schema, filePermission644); err != nil {
+		return fmt.Errorf("writefile %q failed: %w", schemaPath, err)
+	}
+
+	if err := os.WriteFile(path.Join(basePath, "module.go"), module, filePermission644); err != nil {
+		return fmt.Errorf("writefile %q/module.go failed: %w", basePath, err)
+	}
+
+	if err := os.WriteFile(path.Join(basePath, "emptymodule.go"), emptyModule, filePermission644); err != nil {
+		return fmt.Errorf("writefile %q/emptymodule.go failed: %w", basePath, err)
+	}
+
+	return nil
+}
+
+// merge models into config models
+func mergeModels(types *Types, cfg *config.Config) {
+	for graphqlObject, goType := range types.names {
+		cfg.Models[graphqlObject] = config.TypeMapEntry{Model: []string{goType}}
+	}
+
+	for graphqlObject, fields := range types.fields {
+		for graphqlField, goType := range fields {
+			model := cfg.Models[graphqlObject]
+			if cfg.Models[graphqlObject].Fields == nil {
+				model.Fields = make(map[string]config.TypeMapField)
+			}
+
+			model.Fields[graphqlField] = config.TypeMapField{FieldName: goType}
+			cfg.Models[graphqlObject] = model
+		}
+	}
+
+	for graphqlObject, resolver := range types.resolver {
+		for graphqlField := range resolver {
+			model := cfg.Models[graphqlObject]
+			if cfg.Models[graphqlObject].Fields == nil {
+				model.Fields = make(map[string]config.TypeMapField)
+			}
+
+			model.Fields[graphqlField] = config.TypeMapField{Resolver: true}
+			cfg.Models[graphqlObject] = model
+		}
+	}
 }
 
 var _ plugin2.CodeGenerator = &plugin{}
@@ -184,7 +206,8 @@ func (m *plugin) GenerateCode(data *codegen.Data) error {
 			panic("code generation failed")
 		}
 	}()
-	return gqltemplates.Render(gqltemplates.Options{
+
+	err := gqltemplates.Render(gqltemplates.Options{
 		PackageName: "graphql",
 		Filename:    "graphql/resolver.go",
 		Data: &resolverBuild{
@@ -196,6 +219,7 @@ func (m *plugin) GenerateCode(data *codegen.Data) error {
 		Funcs: template.FuncMap{
 			"gpkg": func(from, to string, field codegen.Field) string {
 				if m.types.resolver[from][to][0] == "" {
+					//nolint: forbidigo // special case of error output
 					fmt.Printf(
 						"\nmissing resolver for %q.%q:\n\tfunc (r *%sResolver) %s%s\n\n\ttypes.Resolve(\"%s\", \"%s\", %sResolver{}, \"%s\")\n\n",
 						from, to,
@@ -346,6 +370,12 @@ func direct(root *{{$root.TypeName}}) map[string]interface{} {
 }
 `,
 	})
+
+	if err != nil {
+		return fmt.Errorf("failed to render generation template: %w", err)
+	}
+
+	return nil
 }
 
 type resolverBuild struct {

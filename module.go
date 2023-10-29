@@ -69,12 +69,15 @@ func (r *routes) Inject(
 }
 
 // Routes definition for flamingo router
+//
+//nolint:gomnd // number usage clear together with the function names
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	if r.exec == nil {
 		panic("Please register/generate a schema module before running the server!")
 	}
 
 	var origins []string
+
 	err := r.origins.MapInto(&origins)
 	if err != nil {
 		panic(err)
@@ -119,6 +122,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	registry.HandleAny("graphql", wrapGqlHandler(corsHandler.gqlMiddleware(gqlHandler)))
 
 	registry.MustRoute("/graphql-console", "graphql.console")
+
 	u, _ := r.reverseRouter.Relative("graphql", nil)
 	registry.HandleAny("graphql.console", web.WrapHTTPHandler(playground.Handler("Flamingo GraphQL Console", u.String())))
 }

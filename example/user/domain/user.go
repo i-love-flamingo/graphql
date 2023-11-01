@@ -19,16 +19,22 @@ type UserService interface {
 
 // Get returns an attribute by its key
 func (a Attributes) Get(key string) string {
-	return a[key].(string)
+	if s, ok := a[key].(string); ok {
+		return s
+	}
+
+	return ""
 }
 
 // Keys lists all attribute keys
 func (a Attributes) Keys() []string {
 	keys := make([]string, len(a))
 	i := 0
+
 	for k := range a {
 		keys[i] = k
 		i++
 	}
+
 	return keys
 }

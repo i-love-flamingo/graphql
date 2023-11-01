@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -21,6 +22,7 @@ func wrapGqlHandler(handler http.Handler) web.Action {
 	return func(ctx context.Context, req *web.Request) web.Result {
 		rw := httptest.NewRecorder()
 		handler.ServeHTTP(rw, req.Request().WithContext(ctx))
+
 		return &gqlHandler{
 			request:  req,
 			recorder: rw,
@@ -28,12 +30,17 @@ func wrapGqlHandler(handler http.Handler) web.Action {
 	}
 }
 
-func (h *gqlHandler) Apply(ctx context.Context, rw http.ResponseWriter) error {
+func (h *gqlHandler) Apply(_ context.Context, rw http.ResponseWriter) error {
 	for k, vs := range h.recorder.Header() {
 		for _, v := range vs {
 			rw.Header().Add(k, v)
 		}
 	}
+
 	_, err := io.Copy(rw, h.recorder.Body)
-	return err
+	if err != nil {
+		return fmt.Errorf("failed to write body: %w", err)
+	}
+
+	return nil
 }

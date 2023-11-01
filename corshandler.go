@@ -14,6 +14,7 @@ func (h *corsHandler) validateOrigin(origin string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 

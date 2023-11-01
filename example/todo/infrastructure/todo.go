@@ -17,6 +17,11 @@ var todos = []*domain.Todo{
 	{ID: "task-2", Task: "task c"},
 }
 
+var (
+	ErrNoTodoGiven  = errors.New("no todo given")
+	ErrTodoNotFound = errors.New("todo not found")
+)
+
 // Todos returns a list of mocked todos
 func (ts *TodoService) Todos(_ context.Context, _ string) ([]*domain.Todo, error) {
 	return todos, nil
@@ -25,13 +30,15 @@ func (ts *TodoService) Todos(_ context.Context, _ string) ([]*domain.Todo, error
 // AddTodo mutation adds an entry to the list
 func (ts *TodoService) AddTodo(_ context.Context, _ string, task string) (*domain.Todo, error) {
 	if task == "" {
-		return nil, errors.New("no todo given")
+		return nil, ErrNoTodoGiven
 	}
+
 	todo := &domain.Todo{
 		ID:   "task-" + strconv.Itoa(len(todos)),
 		Task: task,
 	}
 	todos = append(todos, todo)
+
 	return todo, nil
 }
 
@@ -43,5 +50,6 @@ func (ts *TodoService) TodoDone(_ context.Context, todoID string, done bool) (*d
 			return todos[i], nil
 		}
 	}
-	return nil, errors.New("todo not found")
+
+	return nil, ErrTodoNotFound
 }

@@ -3,6 +3,7 @@ package graphql
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"flamingo.me/graphql/example/user/domain"
@@ -24,7 +25,12 @@ func (r *UserQueryResolver) Inject(userService domain.UserService) *UserQueryRes
 
 // User getter
 func (r *UserQueryResolver) User(ctx context.Context, id string) (*domain.User, error) {
-	return r.userService.UserByID(ctx, id)
+	user, err := r.userService.UserByID(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("can not load user: %w", err)
+	}
+
+	return user, nil
 }
 
 // UserAttributeFilter directive

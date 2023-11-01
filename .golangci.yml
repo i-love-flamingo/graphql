@@ -83,7 +83,6 @@ linters:
 issues:
   new: false
   fix: false
-  new-from-rev: 2b6063ac3c145007726044a5555b6d2a40d3b089
   exclude-rules:
     - path: _test\.go
       linters:
@@ -113,5 +112,6 @@ linters-settings:
     ignore-names:
       - err
       - id
+      - to
     ignore-decls:
       - i int

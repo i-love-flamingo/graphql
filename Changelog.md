@@ -1,5 +1,21 @@
 # Changelog
 
+## Version v1.10.1 (2023-11-01)
+
+### Ops and CI/CD
+
+- bump golangci-lint to v1.55 (#85) (2e17f972)
+- Update go version in pipeline (#77) (cdd32194)
+
+### Chores and tidying
+
+- **deps:** update actions/checkout digest to b4ffde6 (#82) (31b63a02)
+- **deps:** bump golang.org/x/net from 0.14.0 to 0.17.0 (#83) (10153fb2)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.40 (#80) (8380d021)
+- fix linter issues (#84) (d12d3544)
+- **deps:** update actions/checkout action to v4 (#79) (a2d450f6)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.7.0 (#76) (42085260)
+
 ## Version v1.10.0 (2023-07-28)
 
 ### Features

@@ -32,6 +32,7 @@ func (tc *Types) Resolve(graphqlType, graphqlField string, typ interface{}, meth
 	if tc.resolver == nil {
 		tc.resolver = make(map[string]map[string][3]string)
 	}
+
 	if tc.resolver[graphqlType] == nil {
 		tc.resolver[graphqlType] = make(map[string][3]string)
 	}
@@ -40,6 +41,7 @@ func (tc *Types) Resolve(graphqlType, graphqlField string, typ interface{}, meth
 	for t.Kind() == reflect.Ptr {
 		t = t.Elem()
 	}
+
 	tc.resolver[graphqlType][graphqlField] = [3]string{t.PkgPath(), t.Name(), method}
 }
 
@@ -48,9 +50,11 @@ func (tc *Types) GoField(graphqlType, graphqlField, goField string) {
 	if tc.fields == nil {
 		tc.fields = make(map[string]map[string]string)
 	}
+
 	if tc.fields[graphqlType] == nil {
 		tc.fields[graphqlType] = make(map[string]string)
 	}
+
 	tc.fields[graphqlType][graphqlField] = goField
 }
 

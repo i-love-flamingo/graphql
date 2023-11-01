@@ -12,6 +12,8 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 )
 
+var ErrUnexpectedValue = errors.New("unexpected value")
+
 // MarshalFloat for graphql Float scalars to be compatible with big.Float
 func MarshalFloat(f big.Float) graphql.Marshaler {
 	return graphql.WriterFunc(func(w io.Writer) {
@@ -21,31 +23,37 @@ func MarshalFloat(f big.Float) graphql.Marshaler {
 
 // UnmarshalFloat for graphql Float scalars to be compatible with big.Float
 func UnmarshalFloat(v interface{}) (big.Float, error) {
-	switch v := v.(type) {
+	switch floatValue := v.(type) {
 	case string:
-		f, _, err := big.ParseFloat(v, 10, 64, big.ToNearestEven)
-		if f == nil {
-			return big.Float{}, err
-		}
-		return *f, err
+		return parseString(floatValue)
 	case int:
-		return *big.NewFloat(float64(v)), nil
+		return *big.NewFloat(float64(floatValue)), nil
 	case int64:
-		return *big.NewFloat(float64(v)), nil
+		return *big.NewFloat(float64(floatValue)), nil
 	case float64:
-		return *big.NewFloat(v), nil
+		return *big.NewFloat(floatValue), nil
 	case json.Number:
-		f, _, err := big.ParseFloat(string(v), 10, 64, big.ToNearestEven)
-		if f == nil {
-			return big.Float{}, err
-		}
-		return *f, err
+		return parseString(string(floatValue))
 	default:
-		return big.Float{}, fmt.Errorf("%T is not a float", v)
+		return big.Float{}, fmt.Errorf("%w: %T is not a float", ErrUnexpectedValue, floatValue)
 	}
 }
 
-// MarshalDate marshals time.Time inf form of YYYY-MM-DD
+//nolint:gomnd // options for float parsing are clear
+func parseString(floatValue string) (big.Float, error) {
+	f, _, err := big.ParseFloat(floatValue, 10, 64, big.ToNearestEven)
+	if f == nil {
+		f = &big.Float{}
+	}
+
+	if err != nil {
+		return *f, fmt.Errorf("can not parse string %q to float: %w", floatValue, err)
+	}
+
+	return *f, nil
+}
+
+// MarshalDate marshals time.Time in form of YYYY-MM-DD
 func MarshalDate(t time.Time) graphql.Marshaler {
 	if t.IsZero() {
 		return graphql.Null
@@ -62,7 +70,14 @@ func UnmarshalDate(v interface{}) (time.Time, error) {
 		if len(tmpStr) == 0 {
 			return time.Time{}, nil
 		}
-		return time.Parse("2006-01-02", tmpStr)
+
+		parse, err := time.Parse(time.DateOnly, tmpStr)
+		if err != nil {
+			return time.Time{}, fmt.Errorf("date must be in format %q: %w", time.DateOnly, err)
+		}
+
+		return parse, nil
 	}
-	return time.Time{}, errors.New("date should be a string")
+
+	return time.Time{}, fmt.Errorf("%w: date should be a string", ErrUnexpectedValue)
 }

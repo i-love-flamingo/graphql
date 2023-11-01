@@ -2,6 +2,7 @@ package todo
 
 import (
 	"context"
+	"fmt"
 
 	"flamingo.me/graphql/example/todo/domain"
 	"flamingo.me/graphql/example/todo/infrastructure"
@@ -21,7 +22,12 @@ func (r *UserResolver) Inject(todosBackend *infrastructure.TodoService) *UserRes
 
 // Todos getter
 func (r *UserResolver) Todos(ctx context.Context, obj *userDomain.User) ([]*domain.Todo, error) {
-	return r.todosBackend.Todos(ctx, obj.Name)
+	todos, err := r.todosBackend.Todos(ctx, obj.Name)
+	if err != nil {
+		return nil, fmt.Errorf("can not load todos: %w", err)
+	}
+
+	return todos, nil
 }
 
 // MutationResolver maps mutations
@@ -37,10 +43,20 @@ func (r *MutationResolver) Inject(resolver *UserResolver) *MutationResolver {
 
 // TodoAdd mutation
 func (r *MutationResolver) TodoAdd(ctx context.Context, user string, task string) (*domain.Todo, error) {
-	return r.resolver.todosBackend.AddTodo(ctx, user, task)
+	todo, err := r.resolver.todosBackend.AddTodo(ctx, user, task)
+	if err != nil {
+		return nil, fmt.Errorf("can not add todo: %w", err)
+	}
+
+	return todo, nil
 }
 
 // TodoDone mutation
 func (r *MutationResolver) TodoDone(ctx context.Context, todo string, done bool) (*domain.Todo, error) {
-	return r.resolver.todosBackend.TodoDone(ctx, todo, done)
+	todoDone, err := r.resolver.todosBackend.TodoDone(ctx, todo, done)
+	if err != nil {
+		return nil, fmt.Errorf("can not update todo: %w", err)
+	}
+
+	return todoDone, nil
 }

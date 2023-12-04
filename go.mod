@@ -5,7 +5,7 @@ go 1.20
 require (
 	flamingo.me/dingo v0.2.10
 	flamingo.me/flamingo/v3 v3.7.0
-	github.com/99designs/gqlgen v0.17.40
+	github.com/99designs/gqlgen v0.17.41
 	github.com/spf13/cobra v1.7.0
 	github.com/vektah/gqlparser/v2 v2.5.10
 	go.opencensus.io v0.24.0

@@ -136,6 +136,10 @@ graphql: {
 	multipartForm: {
 		uploadMaxSize: (int | *1.5M) & > 0
 	}
+	batchMiddleware: {
+		sameOperationsThreshold: number | *3
+		allOperationsThreshold: number | *10
+	}
 }
 `
 }

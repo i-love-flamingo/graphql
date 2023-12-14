@@ -20,6 +20,7 @@ func BatchMiddleware(
 ) func(ctx context.Context, next gql.OperationHandler) gql.ResponseHandler {
 	return func(ctx context.Context, next gql.OperationHandler) gql.ResponseHandler {
 		var sameOperationsThreshold int
+
 		var allOperationsThreshold int
 
 		if cfg == nil {

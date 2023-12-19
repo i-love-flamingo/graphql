@@ -1,4 +1,4 @@
-package graphql
+package graphql_test
 
 import (
 	"net/http"
@@ -9,16 +9,22 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/testserver"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/stretchr/testify/assert"
+
+	"flamingo.me/graphql"
 )
 
 func Test_LimitQueryAmountMiddleware(t *testing.T) {
+	t.Parallel()
+
 	t.Run("deny when there is too many same operations called", func(t *testing.T) {
+		t.Parallel()
+
 		srv := testserver.New()
 
 		srv.AddTransport(transport.GET{})
 		srv.AddTransport(transport.POST{})
 
-		srv.AroundOperations(LimitQueryAmountMiddleware(
+		srv.AroundOperations(graphql.LimitQueryAmountMiddleware(
 			&struct {
 				SameOperationsThreshold int `inject:"config:graphql.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
 				AllOperationsThreshold  int `inject:"config:graphql.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
@@ -37,12 +43,14 @@ func Test_LimitQueryAmountMiddleware(t *testing.T) {
 	})
 
 	t.Run("deny when there are too many different operations invoked in one query", func(t *testing.T) {
+		t.Parallel()
+
 		srv := testserver.New()
 
 		srv.AddTransport(transport.GET{})
 		srv.AddTransport(transport.POST{})
 
-		srv.AroundOperations(LimitQueryAmountMiddleware(
+		srv.AroundOperations(graphql.LimitQueryAmountMiddleware(
 			&struct {
 				SameOperationsThreshold int `inject:"config:graphql.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
 				AllOperationsThreshold  int `inject:"config:graphql.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
@@ -61,12 +69,14 @@ func Test_LimitQueryAmountMiddleware(t *testing.T) {
 	})
 
 	t.Run("allow when request is below both thresholds", func(t *testing.T) {
+		t.Parallel()
+
 		srv := testserver.New()
 
 		srv.AddTransport(transport.GET{})
 		srv.AddTransport(transport.POST{})
 
-		srv.AroundOperations(LimitQueryAmountMiddleware(
+		srv.AroundOperations(graphql.LimitQueryAmountMiddleware(
 			&struct {
 				SameOperationsThreshold int `inject:"config:graphql.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
 				AllOperationsThreshold  int `inject:"config:graphql.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
@@ -87,7 +97,9 @@ func Test_LimitQueryAmountMiddleware(t *testing.T) {
 
 func doRequest(handler http.Handler, method string, target string, body string) *httptest.ResponseRecorder {
 	r := httptest.NewRequest(method, target, strings.NewReader(body))
+
 	r.Header.Set("Content-Type", "application/json")
+
 	w := httptest.NewRecorder()
 
 	handler.ServeHTTP(w, r)

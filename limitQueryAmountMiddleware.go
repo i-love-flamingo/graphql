@@ -12,10 +12,10 @@ const (
 	allOperationsDefaultThreshold  = 10
 )
 
-func BatchMiddleware(
+func LimitQueryAmountMiddleware(
 	cfg *struct {
-		SameOperationsThreshold int `inject:"config:graphql.batchMiddleware.sameOperationsThreshold,optional"`
-		AllOperationsThreshold  int `inject:"config:graphql.batchMiddleware.allOperationsThreshold,optional"`
+		SameOperationsThreshold int `inject:"config:graphql.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
+		AllOperationsThreshold  int `inject:"config:graphql.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
 	},
 ) func(ctx context.Context, next gql.OperationHandler) gql.ResponseHandler {
 	return func(ctx context.Context, next gql.OperationHandler) gql.ResponseHandler {

@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"flamingo.me/dingo"
-	flamingoConfig "flamingo.me/flamingo/v3/framework/config"
-	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -13,6 +11,9 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/spf13/cobra"
+
+	flamingoConfig "flamingo.me/flamingo/v3/framework/config"
+	"flamingo.me/flamingo/v3/framework/web"
 )
 
 // Service defines the interface for graphql services
@@ -24,11 +25,28 @@ type Service interface {
 }
 
 // Module defines the graphql entry point and binds the graphql command and routes
-type Module struct{}
+type Module struct {
+	enableLimitQueryAmountMiddleware bool
+}
+
+// Inject executable schema
+func (m *Module) Inject(
+	config *struct {
+		EnableLimitQueryAmountMiddleware bool `inject:"config:graphql.limitQueryAmountMiddleware.enable,optional"`
+	},
+) {
+	if config != nil {
+		m.enableLimitQueryAmountMiddleware = config.EnableLimitQueryAmountMiddleware
+	}
+}
 
 // Configure sets up dingo
-func (*Module) Configure(injector *dingo.Injector) {
+func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMulti(new(cobra.Command)).ToProvider(command)
+
+	if m.enableLimitQueryAmountMiddleware {
+		injector.BindMulti(new(graphql.OperationMiddleware)).ToProvider(LimitQueryAmountMiddleware)
+	}
 
 	web.BindRoutes(injector, new(routes))
 }
@@ -87,6 +105,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	gqlHandler := func(es graphql.ExecutableSchema) *handler.Server {
 		srv := handler.New(es)
 
+		//srv.Use(extension.FixedComplexityLimit())
 		srv.AddTransport(transport.Websocket{
 			KeepAlivePingInterval: 10 * time.Second,
 		})
@@ -136,8 +155,9 @@ graphql: {
 	multipartForm: {
 		uploadMaxSize: (int | *1.5M) & > 0
 	}
-	batchMiddleware: {
-		sameOperationsThreshold: number | *3
+	limitQueryAmountMiddleware: {
+		enable: bool | *false
+		sameOperationsThreshold: number | *2
 		allOperationsThreshold: number | *10
 	}
 }

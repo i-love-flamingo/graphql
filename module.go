@@ -105,7 +105,6 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	gqlHandler := func(es graphql.ExecutableSchema) *handler.Server {
 		srv := handler.New(es)
 
-		//srv.Use(extension.FixedComplexityLimit())
 		srv.AddTransport(transport.Websocket{
 			KeepAlivePingInterval: 10 * time.Second,
 		})

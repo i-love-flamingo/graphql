@@ -103,5 +103,6 @@ func doRequest(handler http.Handler, method string, target string, body string) 
 	w := httptest.NewRecorder()
 
 	handler.ServeHTTP(w, r)
+
 	return w
 }

@@ -117,6 +117,16 @@ We recommend to namespace your Types and Type extensions with the Project name.
 For Flamingo Core Framework GraphQL Schema we use the prefix `Core_` and for Flamingo Commerce we use `Commerce_`
  
 
+## Config
+
+You can enable `LimitOperationAmountMiddleware` to prevent batching attack by setting `graphql.security.limitOperationAmount.enable` to true. 
+
+`graphql.security.limitOperationAmount.sameOperationLimit` option can be used to set a limit for the same operations called in a single request.
+
+`graphql.security.limitOperationAmount.totalOperationLimit` option can be used to set a limit for all the operations called in a single request.
+
+
+
 ## Resources
 
 Learn GraphQL: https://graphql.org/learn/

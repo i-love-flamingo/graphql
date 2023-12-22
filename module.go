@@ -45,7 +45,7 @@ func (m *Module) Configure(injector *dingo.Injector) {
 	injector.BindMulti(new(cobra.Command)).ToProvider(command)
 
 	if m.enableLimitQueryAmountMiddleware {
-		injector.BindMulti(new(graphql.OperationMiddleware)).ToProvider(LimitQueryAmountMiddleware)
+		injector.BindMulti(new(graphql.OperationMiddleware)).ToProvider(LimitOperationAmountMiddleware)
 	}
 
 	web.BindRoutes(injector, new(routes))
@@ -154,10 +154,12 @@ graphql: {
 	multipartForm: {
 		uploadMaxSize: (int | *1.5M) & > 0
 	}
-	limitQueryAmountMiddleware: {
-		enable: bool | *false
-		sameOperationsThreshold: number | *2
-		allOperationsThreshold: number | *10
+	security: {
+		limitQueryAmountMiddleware: {
+			enable: bool | *false
+			sameOperationsThreshold: number | *2
+			allOperationsThreshold: number | *10
+		}
 	}
 }
 `

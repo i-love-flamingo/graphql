@@ -13,7 +13,7 @@ import (
 	"flamingo.me/graphql"
 )
 
-func Test_LimitQueryAmountMiddleware(t *testing.T) {
+func Test_LimitOperationAmountMiddleware(t *testing.T) {
 	t.Parallel()
 
 	t.Run("deny when there is too many same operations called", func(t *testing.T) {
@@ -24,10 +24,10 @@ func Test_LimitQueryAmountMiddleware(t *testing.T) {
 		srv.AddTransport(transport.GET{})
 		srv.AddTransport(transport.POST{})
 
-		srv.AroundOperations(graphql.LimitQueryAmountMiddleware(
+		srv.AroundOperations(graphql.LimitOperationAmountMiddleware(
 			&struct {
-				SameOperationsThreshold int `inject:"config:graphql.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
-				AllOperationsThreshold  int `inject:"config:graphql.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
+				SameOperationsThreshold int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
+				AllOperationsThreshold  int `inject:"config:graphql.security.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
 			}{
 				SameOperationsThreshold: 2,
 				AllOperationsThreshold:  10,
@@ -50,10 +50,10 @@ func Test_LimitQueryAmountMiddleware(t *testing.T) {
 		srv.AddTransport(transport.GET{})
 		srv.AddTransport(transport.POST{})
 
-		srv.AroundOperations(graphql.LimitQueryAmountMiddleware(
+		srv.AroundOperations(graphql.LimitOperationAmountMiddleware(
 			&struct {
-				SameOperationsThreshold int `inject:"config:graphql.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
-				AllOperationsThreshold  int `inject:"config:graphql.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
+				SameOperationsThreshold int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
+				AllOperationsThreshold  int `inject:"config:graphql.security.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
 			}{
 				SameOperationsThreshold: 27,
 				AllOperationsThreshold:  0,
@@ -76,10 +76,10 @@ func Test_LimitQueryAmountMiddleware(t *testing.T) {
 		srv.AddTransport(transport.GET{})
 		srv.AddTransport(transport.POST{})
 
-		srv.AroundOperations(graphql.LimitQueryAmountMiddleware(
+		srv.AroundOperations(graphql.LimitOperationAmountMiddleware(
 			&struct {
-				SameOperationsThreshold int `inject:"config:graphql.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
-				AllOperationsThreshold  int `inject:"config:graphql.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
+				SameOperationsThreshold int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
+				AllOperationsThreshold  int `inject:"config:graphql.security.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
 			}{
 				SameOperationsThreshold: 10,
 				AllOperationsThreshold:  10,

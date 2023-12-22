@@ -12,10 +12,12 @@ const (
 	allOperationsDefaultThreshold  = 10
 )
 
-func LimitQueryAmountMiddleware(
+var _ gql.OperationMiddleware = LimitOperationAmountMiddleware(nil)
+
+func LimitOperationAmountMiddleware(
 	cfg *struct {
-		SameOperationsThreshold int `inject:"config:graphql.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
-		AllOperationsThreshold  int `inject:"config:graphql.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
+		SameOperationsThreshold int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
+		AllOperationsThreshold  int `inject:"config:graphql.security.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
 	},
 ) func(ctx context.Context, next gql.OperationHandler) gql.ResponseHandler {
 	return func(ctx context.Context, next gql.OperationHandler) gql.ResponseHandler {

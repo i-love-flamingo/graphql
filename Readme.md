@@ -119,11 +119,11 @@ For Flamingo Core Framework GraphQL Schema we use the prefix `Core_` and for Fla
 
 ## Config
 
-You can enable `LimitOperationAmountMiddleware` to prevent batching attack by setting `graphql.security.limitQueryAmountMiddleware.enable` to true. 
+You can enable `LimitOperationAmountMiddleware` to prevent batching attack by setting `graphql.security.limitOperationAmount.enable` to true. 
 
-`graphql.security.limitQueryAmountMiddleware.sameOperationsThreshold` option can be used to set a threshold for the same operations called in a single request.
+`graphql.security.limitOperationAmount.sameOperationLimit` option can be used to set a limit for the same operations called in a single request.
 
-`graphql.security.limitQueryAmountMiddleware.allOperationsThreshold` option can be used to set a threshold for all the operations called in a single request.
+`graphql.security.limitOperationAmount.totalOperationLimit` option can be used to set a limit for all the operations called in a single request.
 
 
 

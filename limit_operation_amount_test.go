@@ -26,8 +26,8 @@ func Test_LimitOperationAmountMiddleware(t *testing.T) {
 
 		srv.AroundOperations(graphql.LimitOperationAmountMiddleware(
 			&struct {
-				SameOperationLimit  int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationLimit,optional"`
-				TotalOperationLimit int `inject:"config:graphql.security.limitQueryAmountMiddleware.totalOperationLimit,optional"`
+				SameOperationLimit  int `inject:"config:graphql.security.limitOperationAmount.sameOperationLimit,optional"`
+				TotalOperationLimit int `inject:"config:graphql.security.limitOperationAmount.totalOperationLimit,optional"`
 			}{
 				SameOperationLimit:  2,
 				TotalOperationLimit: 10,
@@ -52,8 +52,8 @@ func Test_LimitOperationAmountMiddleware(t *testing.T) {
 
 		srv.AroundOperations(graphql.LimitOperationAmountMiddleware(
 			&struct {
-				SameOperationLimit  int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationLimit,optional"`
-				TotalOperationLimit int `inject:"config:graphql.security.limitQueryAmountMiddleware.totalOperationLimit,optional"`
+				SameOperationLimit  int `inject:"config:graphql.security.limitOperationAmount.sameOperationLimit,optional"`
+				TotalOperationLimit int `inject:"config:graphql.security.limitOperationAmount.totalOperationLimit,optional"`
 			}{
 				SameOperationLimit:  27,
 				TotalOperationLimit: 0,
@@ -78,8 +78,8 @@ func Test_LimitOperationAmountMiddleware(t *testing.T) {
 
 		srv.AroundOperations(graphql.LimitOperationAmountMiddleware(
 			&struct {
-				SameOperationLimit  int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationLimit,optional"`
-				TotalOperationLimit int `inject:"config:graphql.security.limitQueryAmountMiddleware.totalOperationLimit,optional"`
+				SameOperationLimit  int `inject:"config:graphql.security.limitOperationAmount.sameOperationLimit,optional"`
+				TotalOperationLimit int `inject:"config:graphql.security.limitOperationAmount.totalOperationLimit,optional"`
 			}{
 				SameOperationLimit:  10,
 				TotalOperationLimit: 10,

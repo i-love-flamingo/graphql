@@ -16,8 +16,8 @@ var _ gql.OperationMiddleware = LimitOperationAmountMiddleware(nil)
 
 func LimitOperationAmountMiddleware(
 	cfg *struct {
-		SameOperationLimit  int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationLimit,optional"`
-		TotalOperationLimit int `inject:"config:graphql.security.limitQueryAmountMiddleware.totalOperationLimit,optional"`
+		SameOperationLimit  int `inject:"config:graphql.security.limitOperationAmount.sameOperationLimit,optional"`
+		TotalOperationLimit int `inject:"config:graphql.security.limitOperationAmount.totalOperationLimit,optional"`
 	},
 ) func(ctx context.Context, next gql.OperationHandler) gql.ResponseHandler {
 	return func(ctx context.Context, next gql.OperationHandler) gql.ResponseHandler {

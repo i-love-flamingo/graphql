@@ -155,7 +155,7 @@ graphql: {
 		uploadMaxSize: (int | *1.5M) & > 0
 	}
 	security: {
-		limitQueryAmountMiddleware: {
+		limitOperationAmount: {
 			enable: bool | *false
 			sameOperationLimit: number | *2
 			totalOperationLimit: number | *10

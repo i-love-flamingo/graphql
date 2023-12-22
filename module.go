@@ -32,7 +32,7 @@ type Module struct {
 // Inject executable schema
 func (m *Module) Inject(
 	config *struct {
-		EnableLimitQueryAmountMiddleware bool `inject:"config:graphql.limitQueryAmountMiddleware.enable,optional"`
+		EnableLimitQueryAmountMiddleware bool `inject:"config:graphql.security.limitOperationAmount.enable,optional"`
 	},
 ) {
 	if config != nil {

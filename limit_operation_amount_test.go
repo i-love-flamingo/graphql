@@ -26,11 +26,11 @@ func Test_LimitOperationAmountMiddleware(t *testing.T) {
 
 		srv.AroundOperations(graphql.LimitOperationAmountMiddleware(
 			&struct {
-				SameOperationsThreshold int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
-				AllOperationsThreshold  int `inject:"config:graphql.security.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
+				SameOperationLimit  int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationLimit,optional"`
+				TotalOperationLimit int `inject:"config:graphql.security.limitQueryAmountMiddleware.totalOperationLimit,optional"`
 			}{
-				SameOperationsThreshold: 2,
-				AllOperationsThreshold:  10,
+				SameOperationLimit:  2,
+				TotalOperationLimit: 10,
 			}))
 
 		body := `{
@@ -52,11 +52,11 @@ func Test_LimitOperationAmountMiddleware(t *testing.T) {
 
 		srv.AroundOperations(graphql.LimitOperationAmountMiddleware(
 			&struct {
-				SameOperationsThreshold int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
-				AllOperationsThreshold  int `inject:"config:graphql.security.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
+				SameOperationLimit  int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationLimit,optional"`
+				TotalOperationLimit int `inject:"config:graphql.security.limitQueryAmountMiddleware.totalOperationLimit,optional"`
 			}{
-				SameOperationsThreshold: 27,
-				AllOperationsThreshold:  0,
+				SameOperationLimit:  27,
+				TotalOperationLimit: 0,
 			}))
 
 		body := `{
@@ -78,11 +78,11 @@ func Test_LimitOperationAmountMiddleware(t *testing.T) {
 
 		srv.AroundOperations(graphql.LimitOperationAmountMiddleware(
 			&struct {
-				SameOperationsThreshold int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
-				AllOperationsThreshold  int `inject:"config:graphql.security.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
+				SameOperationLimit  int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationLimit,optional"`
+				TotalOperationLimit int `inject:"config:graphql.security.limitQueryAmountMiddleware.totalOperationLimit,optional"`
 			}{
-				SameOperationsThreshold: 10,
-				AllOperationsThreshold:  10,
+				SameOperationLimit:  10,
+				TotalOperationLimit: 10,
 			}))
 
 		body := `{

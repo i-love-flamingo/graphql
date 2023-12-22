@@ -16,24 +16,24 @@ var _ gql.OperationMiddleware = LimitOperationAmountMiddleware(nil)
 
 func LimitOperationAmountMiddleware(
 	cfg *struct {
-		SameOperationsThreshold int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationsThreshold,optional"`
-		AllOperationsThreshold  int `inject:"config:graphql.security.limitQueryAmountMiddleware.allOperationsThreshold,optional"`
+		SameOperationLimit  int `inject:"config:graphql.security.limitQueryAmountMiddleware.sameOperationLimit,optional"`
+		TotalOperationLimit int `inject:"config:graphql.security.limitQueryAmountMiddleware.totalOperationLimit,optional"`
 	},
 ) func(ctx context.Context, next gql.OperationHandler) gql.ResponseHandler {
 	return func(ctx context.Context, next gql.OperationHandler) gql.ResponseHandler {
-		sameOperationsThreshold := sameOperationsDefaultThreshold
-		allOperationsThreshold := allOperationsDefaultThreshold
+		sameOperationLimit := sameOperationsDefaultThreshold
+		totalOperationLimit := allOperationsDefaultThreshold
 
 		if cfg != nil {
-			sameOperationsThreshold = cfg.SameOperationsThreshold
-			allOperationsThreshold = cfg.AllOperationsThreshold
+			sameOperationLimit = cfg.SameOperationLimit
+			totalOperationLimit = cfg.TotalOperationLimit
 		}
 
 		req := gql.GetOperationContext(ctx)
 
 		occurrences := countTopLevelGraphQLOperations(req.Operation.SelectionSet)
 
-		if isAboveThreshold(sameOperationsThreshold, allOperationsThreshold, occurrences) {
+		if isAboveThreshold(sameOperationLimit, totalOperationLimit, occurrences) {
 			return func(ctx context.Context) *gql.Response {
 				return gql.ErrorResponse(ctx, "request not allowed")
 			}
@@ -62,13 +62,13 @@ func countTopLevelGraphQLOperations(definition []ast.Selection) map[string]int {
 	return mapOfOccurrences
 }
 
-func isAboveThreshold(threshold, operationsThreshold int, operations map[string]int) bool {
-	if len(operations) > operationsThreshold {
+func isAboveThreshold(sameOperationLimit, totalOperationLimit int, operations map[string]int) bool {
+	if len(operations) > totalOperationLimit {
 		return true
 	}
 
 	for _, operationsNumber := range operations {
-		if operationsNumber > threshold {
+		if operationsNumber > sameOperationLimit {
 			return true
 		}
 	}

@@ -157,8 +157,8 @@ graphql: {
 	security: {
 		limitQueryAmountMiddleware: {
 			enable: bool | *false
-			sameOperationsThreshold: number | *2
-			allOperationsThreshold: number | *10
+			sameOperationLimit: number | *2
+			totalOperationLimit: number | *10
 		}
 	}
 }

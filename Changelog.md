@@ -1,5 +1,19 @@
 # Changelog
 
+## Version v1.11.0 (2024-02-06)
+
+### Features
+
+- **security:** add middleware to limit top level operation amount (#90) (4cb35ae3)
+
+### Chores and tidying
+
+- **deps:** update module github.com/99designs/gqlgen to v0.17.43 (#91) (0c43c473)
+- **deps:** update module github.com/vektah/gqlparser/v2 to v2.5.11 (#92) (ebeef0c3)
+- **deps:** update actions/setup-go action to v5 (#88) (2a52972d)
+- **deps:** update module github.com/spf13/cobra to v1.8.0 (#86) (ed0576b0)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.41 (#87) (b5cd0ce8)
+
 ## Version v1.10.1 (2023-11-01)
 
 ### Ops and CI/CD

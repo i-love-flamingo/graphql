@@ -1,5 +1,11 @@
 # Changelog
 
+## Version v1.11.1 (2024-02-08)
+
+### Chores and tidying
+
+- **deps:** update module flamingo.me/flamingo/v3 to v3.8.0 (#93) (51d46de7)
+
 ## Version v1.11.0 (2024-02-06)
 
 ### Features

@@ -1,5 +1,13 @@
 # Changelog
 
+## Version v1.11.2 (2024-03-04)
+
+### Chores and tidying
+
+- **deps:** update module github.com/stretchr/testify to v1.9.0 (#97) (e4e7797c)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.44 (#96) (df423d3f)
+- **deps:** update golangci/golangci-lint-action action to v4 (#95) (56e3efee)
+
 ## Version v1.11.1 (2024-02-08)
 
 ### Chores and tidying

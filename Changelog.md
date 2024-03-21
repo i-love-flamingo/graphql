@@ -1,5 +1,12 @@
 # Changelog
 
+## Version v1.11.3 (2024-03-21)
+
+### Chores and tidying
+
+- **deps:** update module github.com/99designs/gqlgen to v0.17.45 (#100) (24372995)
+- **deps:** bump google.golang.org/protobuf from 1.32.0 to 1.33.0 (#101) (c47f7c03)
+
 ## Version v1.11.2 (2024-03-04)
 
 ### Chores and tidying

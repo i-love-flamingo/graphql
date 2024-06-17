@@ -1,5 +1,20 @@
 # Changelog
 
+## Version v1.11.3 (2024-06-17)
+
+### Chores and tidying
+
+- **deps:** update actions/checkout digest to 692973e (#105) (704adc4d)
+- **deps:** update dependency go to v1.22.4 (#111) (b3410fcb)
+- **deps:** update module github.com/spf13/cobra to v1.8.1 (#114) (32224faa)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.49 (#109) (57c3cd2f)
+- **deps:** update golangci/golangci-lint-action action to v6 (#108) (8d17a220)
+- **deps:** update dependency go to v1.22.3 (#104) (945832b0)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.8.1 (#107) (e253d0c3)
+- **deps:** bump golang.org/x/net from 0.22.0 to 0.23.0 (#103) (1163d35c)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.45 (#100) (24372995)
+- **deps:** bump google.golang.org/protobuf from 1.32.0 to 1.33.0 (#101) (c47f7c03)
+
 ## Version v1.11.2 (2024-03-04)
 
 ### Chores and tidying

@@ -2,7 +2,7 @@ module flamingo.me/graphql
 
 go 1.21
 
-toolchain go1.22.4
+toolchain go1.22.5
 
 require (
 	flamingo.me/dingo v0.2.10

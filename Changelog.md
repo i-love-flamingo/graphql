@@ -1,5 +1,13 @@
 # Changelog
 
+## Version v1.11.4 (2024-08-08)
+
+### Chores and tidying
+
+- **deps:** update dependency go to v1.22.6 (#118) (38f71f93)
+- **deps:** update dependency go to v1.22.5 (#115) (be2c76a5)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.9.0 (#116) (9f32919b)
+
 ## Version v1.11.3 (2024-06-17)
 
 ### Chores and tidying

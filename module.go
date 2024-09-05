@@ -88,7 +88,7 @@ func (r *routes) Inject(
 
 // Routes definition for flamingo router
 //
-//nolint:gomnd // number usage clear together with the function names
+//nolint:mnd // number usage clear together with the function names
 func (r *routes) Routes(registry *web.RouterRegistry) {
 	if r.exec == nil {
 		panic("Please register/generate a schema module before running the server!")

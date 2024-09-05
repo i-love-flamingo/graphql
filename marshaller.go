@@ -39,7 +39,7 @@ func UnmarshalFloat(v interface{}) (big.Float, error) {
 	}
 }
 
-//nolint:gomnd // options for float parsing are clear
+//nolint:mnd // options for float parsing are clear
 func parseString(floatValue string) (big.Float, error) {
 	f, _, err := big.ParseFloat(floatValue, 10, 64, big.ToNearestEven)
 	if f == nil {

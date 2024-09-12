@@ -1,9 +1,14 @@
 package graphql
 
 import (
+	"context"
+	"errors"
+	"strings"
 	"time"
 
 	"flamingo.me/dingo"
+	flamingoConfig "flamingo.me/flamingo/v3/framework/config"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -11,9 +16,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/spf13/cobra"
-
-	flamingoConfig "flamingo.me/flamingo/v3/framework/config"
-	"flamingo.me/flamingo/v3/framework/web"
+	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 // Service defines the interface for graphql services
@@ -105,6 +108,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	gqlHandler := func(es graphql.ExecutableSchema) *handler.Server {
 		srv := handler.New(es)
 
+		srv.SetErrorPresenter(errorPresenterFunc)
 		srv.AddTransport(transport.Websocket{
 			KeepAlivePingInterval: 10 * time.Second,
 		})
@@ -143,6 +147,26 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 
 	u, _ := r.reverseRouter.Relative("graphql", nil)
 	registry.HandleAny("graphql.console", web.WrapHTTPHandler(playground.Handler("Flamingo GraphQL Console", u.String())))
+}
+
+func errorPresenterFunc(_ context.Context, err error) *gqlerror.Error {
+	var target *gqlerror.Error
+
+	if errors.As(err, &target) {
+		switch target.Rule {
+		case "FieldsOnCorrectType":
+			// Error message of this type exposes actual GraphQL types via suggestions: e.g.: Cannot query field "Commerce_Cart" on type "Query". Did you mean "Commerce_Product" or "Commerce_Customer"?
+			// We are dropping all sentences after first full stop sign (dot)
+			parts := strings.SplitAfter(target.Message, ".")
+			if len(parts) > 0 {
+				target.Message = parts[0]
+			}
+		}
+
+		return target
+	}
+
+	return gqlerror.Wrap(err)
 }
 
 // CueConfig for the module

@@ -4,6 +4,8 @@ import (
 	"time"
 
 	"flamingo.me/dingo"
+	flamingoConfig "flamingo.me/flamingo/v3/framework/config"
+	"flamingo.me/flamingo/v3/framework/web"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -11,9 +13,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/spf13/cobra"
-
-	flamingoConfig "flamingo.me/flamingo/v3/framework/config"
-	"flamingo.me/flamingo/v3/framework/web"
 )
 
 // Service defines the interface for graphql services
@@ -105,6 +104,7 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 	gqlHandler := func(es graphql.ExecutableSchema) *handler.Server {
 		srv := handler.New(es)
 
+		srv.SetErrorPresenter(DropTypeHintsFromErrorMessage)
 		srv.AddTransport(transport.Websocket{
 			KeepAlivePingInterval: 10 * time.Second,
 		})

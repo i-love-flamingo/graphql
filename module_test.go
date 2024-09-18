@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"flamingo.me/flamingo/v3/framework/config"
+
 	"flamingo.me/graphql"
 )
 

@@ -1,5 +1,21 @@
 # Changelog
 
+## Version v1.12.0 (2024-09-18)
+
+### Features
+
+- **#119:** mute type hints in GraphQL error messages (#123) (32e0eb3f)
+
+### Chores and tidying
+
+- **deps:** update module github.com/99designs/gqlgen to v0.17.53 (#124) (69c4f731)
+- **deps:** update dependency go to v1.23.1 (#120) (a164bfd8)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.10.1 (#122) (6b9b55e6)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.10.0 (#121) (104a8bf4)
+- **deps:** update dependency go to v1.22.6 (#118) (38f71f93)
+- **deps:** update dependency go to v1.22.5 (#115) (be2c76a5)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.9.0 (#116) (9f32919b)
+
 ## Version v1.11.3 (2024-06-17)
 
 ### Chores and tidying

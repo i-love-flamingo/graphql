@@ -1,4 +1,4 @@
-package graphql
+package graphql_test
 
 import (
 	"context"
@@ -7,9 +7,11 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/vektah/gqlparser/v2/gqlerror"
+
+	"flamingo.me/graphql"
 )
 
-func Test_errorPresenterFunc(t *testing.T) {
+func Test_DropTypeHintsFromErrorMessage(t *testing.T) {
 	t.Parallel()
 
 	type args struct {
@@ -60,12 +62,10 @@ func Test_errorPresenterFunc(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
-
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			assert.Equalf(t, tt.want, errorPresenterFunc(tt.args.ctx, tt.args.err), "errorPresenterFunc(%v, %v)", tt.args.ctx, tt.args.err)
+			assert.Equalf(t, tt.want, graphql.DropTypeHintsFromErrorMessage(tt.args.ctx, tt.args.err), "DropTypeHintsFromErrorMessage(%v, %v)", tt.args.ctx, tt.args.err)
 		})
 	}
 }

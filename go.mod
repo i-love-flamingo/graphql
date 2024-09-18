@@ -6,7 +6,7 @@ toolchain go1.23.0
 
 require (
 	flamingo.me/dingo v0.2.10
-	flamingo.me/flamingo/v3 v3.10.0
+	flamingo.me/flamingo/v3 v3.10.1
 	github.com/99designs/gqlgen v0.17.49
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0

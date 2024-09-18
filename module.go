@@ -13,6 +13,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/spf13/cobra"
+	"github.com/vektah/gqlparser/v2/ast"
 )
 
 // Service defines the interface for graphql services
@@ -114,10 +115,10 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 		srv.AddTransport(transport.MultipartForm{
 			MaxUploadSize: r.uploadMaxSize,
 		})
-		srv.SetQueryCache(lru.New(1000))
+		srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
 
 		srv.Use(extension.AutomaticPersistedQuery{
-			Cache: lru.New(100),
+			Cache: lru.New[string](100),
 		})
 
 		if r.introspectionEnabled {

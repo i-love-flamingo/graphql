@@ -10,7 +10,7 @@ require (
 	github.com/99designs/gqlgen v0.17.54
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
-	github.com/vektah/gqlparser/v2 v2.5.16
+	github.com/vektah/gqlparser/v2 v2.5.17
 	go.opencensus.io v0.24.0
 )
 

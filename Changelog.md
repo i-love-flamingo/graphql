@@ -1,5 +1,13 @@
 # Changelog
 
+## Version v1.12.1 (2024-10-01)
+
+### Chores and tidying
+
+- **deps:** update module github.com/vektah/gqlparser/v2 to v2.5.17 (#127) (497c1c62)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.54 (#126) (7b9c181f)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.11.0 (#125) (81fb4e73)
+
 ## Version v1.12.0 (2024-09-18)
 
 ### Features

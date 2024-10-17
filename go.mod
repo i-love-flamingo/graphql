@@ -7,7 +7,7 @@ toolchain go1.23.1
 require (
 	flamingo.me/dingo v0.2.10
 	flamingo.me/flamingo/v3 v3.11.0
-	github.com/99designs/gqlgen v0.17.54
+	github.com/99designs/gqlgen v0.17.55
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 	github.com/vektah/gqlparser/v2 v2.5.18

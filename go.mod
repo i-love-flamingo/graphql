@@ -5,7 +5,7 @@ go 1.22.5
 toolchain go1.23.2
 
 require (
-	flamingo.me/dingo v0.2.10
+	flamingo.me/dingo v0.3.0
 	flamingo.me/flamingo/v3 v3.11.0
 	github.com/99designs/gqlgen v0.17.55
 	github.com/spf13/cobra v1.8.1

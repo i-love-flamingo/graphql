@@ -9,8 +9,8 @@ require (
 	flamingo.me/flamingo/v3 v3.11.0
 	github.com/99designs/gqlgen v0.17.55
 	github.com/spf13/cobra v1.8.1
-	github.com/stretchr/testify v1.9.0
-	github.com/vektah/gqlparser/v2 v2.5.18
+	github.com/stretchr/testify v1.10.0
+	github.com/vektah/gqlparser/v2 v2.5.20
 	go.opencensus.io v0.24.0
 )
 
@@ -19,7 +19,7 @@ require (
 	contrib.go.opencensus.io/exporter/prometheus v0.4.2 // indirect
 	contrib.go.opencensus.io/exporter/zipkin v0.1.2 // indirect
 	cuelang.org/go v0.0.15 // indirect
-	github.com/agnivade/levenshtein v1.1.1 // indirect
+	github.com/agnivade/levenshtein v1.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cockroachdb/apd/v2 v2.0.2 // indirect

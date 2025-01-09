@@ -1,5 +1,23 @@
 # Changelog
 
+## Version v1.12.1 (2025-01-09)
+
+### Chores and tidying
+
+- **deps:** update module github.com/vektah/gqlparser/v2 to v2.5.21 (#140) (045ce12f)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.60 (#136) (01e19a8e)
+- **deps:** update dependency go to v1.23.4 (#134) (879aacf8)
+- **deps:** update module flamingo.me/dingo to v0.3.0 (#138) (2fc3f168)
+- **deps:** update module github.com/vektah/gqlparser/v2 to v2.5.20 (#135) (f9f5fa75)
+- **deps:** update actions/checkout digest to 11bd719 (#133) (0c0dd5a9)
+- **deps:** update actions/checkout digest to eef6144 (#131) (53d57a7f)
+- **deps:** update dependency go to v1.23.2 (#129) (b28969e4)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.55 (#130) (1af1723b)
+- **deps:** update module github.com/vektah/gqlparser/v2 to v2.5.18 (#132) (77c5226e)
+- **deps:** update module github.com/vektah/gqlparser/v2 to v2.5.17 (#127) (497c1c62)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.54 (#126) (7b9c181f)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.11.0 (#125) (81fb4e73)
+
 ## Version v1.12.0 (2024-09-18)
 
 ### Features

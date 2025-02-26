@@ -1,5 +1,11 @@
 # Changelog
 
+## Version v1.13.0 (2025-02-26)
+
+### Features
+
+- **302390:** remove error presenter, use DisableSuggestion feature (#146) (c3f6f582)
+
 ## Version v1.12.1 (2025-02-17)
 
 ### Chores and tidying

@@ -16,7 +16,7 @@ jobs:
         go: [ '1.23', '1.x' ]
     name: Tests
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Setup Go
         uses: actions/setup-go@v6
         with:
@@ -33,7 +33,7 @@ jobs:
         go: [ '1.x' ]
     name: Static checks
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - name: Setup Go
         uses: actions/setup-go@v6
         with:

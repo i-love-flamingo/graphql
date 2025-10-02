@@ -1,5 +1,17 @@
 # Changelog
 
+## Version v1.13.0 (2025-10-02)
+
+### Features
+
+- **302390:** remove error presenter, use DisableSuggestion feature (#146) (c3f6f582)
+
+### Chores and tidying
+
+- **deps:** update actions/setup-go action to v6 (#160) (b7429c26)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.15.0 (#153) (94c266ea)
+- migrate golangci-lint to v2 (#154) (1f89c725)
+
 ## Version v1.12.1 (2025-02-17)
 
 ### Chores and tidying

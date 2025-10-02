@@ -9,7 +9,7 @@ require (
 	flamingo.me/flamingo/v3 v3.15.0
 	github.com/99designs/gqlgen v0.17.66
 	github.com/spf13/cobra v1.9.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/vektah/gqlparser/v2 v2.5.22
 	go.opencensus.io v0.24.0
 )

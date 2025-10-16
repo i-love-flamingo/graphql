@@ -7,10 +7,10 @@ toolchain go1.25.3
 require (
 	flamingo.me/dingo v0.3.0
 	flamingo.me/flamingo/v3 v3.17.0
-	github.com/99designs/gqlgen v0.17.66
+	github.com/99designs/gqlgen v0.17.81
 	github.com/spf13/cobra v1.10.1
 	github.com/stretchr/testify v1.11.1
-	github.com/vektah/gqlparser/v2 v2.5.22
+	github.com/vektah/gqlparser/v2 v2.5.30
 	go.opencensus.io v0.24.0
 )
 
@@ -19,7 +19,7 @@ require (
 	contrib.go.opencensus.io/exporter/prometheus v0.4.2 // indirect
 	contrib.go.opencensus.io/exporter/zipkin v0.1.2 // indirect
 	cuelang.org/go v0.0.15 // indirect
-	github.com/agnivade/levenshtein v1.2.0 // indirect
+	github.com/agnivade/levenshtein v1.2.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
@@ -56,15 +56,15 @@ require (
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	golang.org/x/mod v0.27.0 // indirect
-	golang.org/x/net v0.43.0 // indirect
+	golang.org/x/mod v0.28.0 // indirect
+	golang.org/x/net v0.44.0 // indirect
 	golang.org/x/sync v0.17.0 // indirect
-	golang.org/x/sys v0.35.0 // indirect
-	golang.org/x/text v0.28.0 // indirect
-	golang.org/x/tools v0.36.0 // indirect
+	golang.org/x/sys v0.36.0 // indirect
+	golang.org/x/text v0.29.0 // indirect
+	golang.org/x/tools v0.37.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/api v0.152.0 // indirect
-	google.golang.org/protobuf v1.36.5 // indirect
+	google.golang.org/protobuf v1.36.9 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

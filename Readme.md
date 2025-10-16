@@ -62,7 +62,7 @@ func (Module) Configure(injector *dingo.Injector) {
 	injector.BindMulti(new(graphql.Service)).To(new(service))
 }
 
-// Depends marks dependency to the graphql Module
+// Depends on marks dependency to the graphql Module
 func (*Module) Depends() []dingo.Module {
 	return []dingo.Module{
 		new(graphql.Module),
@@ -70,7 +70,7 @@ func (*Module) Depends() []dingo.Module {
 }
 ```
 
-## Setup Graphql in your Flamingo project
+## Set up Graphql in your Flamingo project
 
 Add the `graphql.Module` to your projects modules.
 
@@ -84,7 +84,7 @@ Better is to add the following lines to your project main file:
 
 Then you can run `go generate .` instead of `go run main.go graphql`
 
-After this the project specific graphql code is generated inside the folder `graphql`
+After this the project-specific graphql code is generated inside the folder `graphql`
 
 You then also need to add the generated local Module to your main project file:
 
@@ -99,7 +99,7 @@ import (
 ....
 
 ```
-Now when you start your application you are able to use the graphql API and the graphql console.
+Now when you start your application, you are able to use the graphql API and the graphql console.
 See the `example` folder for a complete example on how to use `flamingo.me/graphql`.
 
 The next thing you need to do is to add Resolver to the file `resolver.go`:
@@ -108,12 +108,12 @@ The next thing you need to do is to add Resolver to the file `resolver.go`:
 
 Everything needs to be resolved, unless `gqlgen` can figure something out on its own.
 
-Best practice here is to provide default resolvers in your code, which can be used via embedding.
+The best practice here is to provide default resolvers in your code, which can be used via embedding.
 See [`example/user`](https://github.com/i-love-flamingo/graphql/blob/master/example/user/interfaces/graphql/resolver.go) for an example UserQuery resolver.
 
 ### Suggested Naming Conventions
 
-We recommend to namespace your Types and Type extensions with the Project name. 
+We recommend namespacing your Types and Type extensions with the Project name. 
 For Flamingo Core Framework GraphQL Schema we use the prefix `Core_` and for Flamingo Commerce we use `Commerce_`
  
 

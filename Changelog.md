@@ -1,5 +1,24 @@
 # Changelog
 
+## Version v1.13.0 (2026-02-05)
+
+### Features
+
+- **302390:** remove error presenter, use DisableSuggestion feature (#146) (c3f6f582)
+
+### Chores and tidying
+
+- **deps:** update dependency go to v1.25.7 (#162) (d80e3d8f)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.17.1 (#166) (d763da92)
+- **deps:** update golangci/golangci-lint-action action to v9 (#164) (995270cd)
+- **deps:** update module github.com/99designs/gqlgen to v0.17.81 (#150) (a58718be)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.17.0 (#155) (7911182b)
+- **deps:** update dependency go to v1.25.3 (#149) (436f6b97)
+- **deps:** update actions/checkout action to v5 (#157) (fb60e9cb)
+- **deps:** update actions/setup-go action to v6 (#160) (b7429c26)
+- **deps:** update module flamingo.me/flamingo/v3 to v3.15.0 (#153) (94c266ea)
+- migrate golangci-lint to v2 (#154) (1f89c725)
+
 ## Version v1.12.1 (2025-02-17)
 
 ### Chores and tidying

@@ -1,6 +1,7 @@
 package graphql_test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -37,7 +38,7 @@ func Test_LimitOperationAmountMiddleware(t *testing.T) {
 				  "query": "query { user1: name user2: name user3: name user4: name user5: name }"
 				}`
 
-		resp := doRequest(srv, "POST", "/graphql", body)
+		resp := doRequest(t.Context(), srv, "POST", "/graphql", body)
 		assert.Equal(t, http.StatusOK, resp.Code, resp.Body.String())
 		assert.Equal(t, `{"errors":[{"message":"request not allowed"}],"data":null}`, resp.Body.String())
 	})
@@ -63,7 +64,7 @@ func Test_LimitOperationAmountMiddleware(t *testing.T) {
 				  "query": "query { user1: name user2: name user3: name user4: name user5: name }"
 				}`
 
-		resp := doRequest(srv, "POST", "/graphql", body)
+		resp := doRequest(t.Context(), srv, "POST", "/graphql", body)
 		assert.Equal(t, http.StatusOK, resp.Code, resp.Body.String())
 		assert.Equal(t, `{"errors":[{"message":"request not allowed"}],"data":null}`, resp.Body.String())
 	})
@@ -89,14 +90,14 @@ func Test_LimitOperationAmountMiddleware(t *testing.T) {
 				  "query": "query { user1: name user2: name }"
 				}`
 
-		resp := doRequest(srv, "POST", "/graphql", body)
+		resp := doRequest(t.Context(), srv, "POST", "/graphql", body)
 		assert.Equal(t, http.StatusOK, resp.Code, resp.Body.String())
 		assert.Equal(t, `{"data":{"name":"test"}}`, resp.Body.String())
 	})
 }
 
-func doRequest(handler http.Handler, method string, target string, body string) *httptest.ResponseRecorder {
-	r := httptest.NewRequest(method, target, strings.NewReader(body))
+func doRequest(ctx context.Context, handler http.Handler, method string, target string, body string) *httptest.ResponseRecorder {
+	r := httptest.NewRequestWithContext(ctx, method, target, strings.NewReader(body))
 
 	r.Header.Set("Content-Type", "application/json")
 

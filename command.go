@@ -201,6 +201,7 @@ func (m *plugin) GenerateCode(data *codegen.Data) error {
 	}
 
 	errored := false
+
 	defer func() {
 		if errored {
 			panic("code generation failed")
@@ -228,8 +229,10 @@ func (m *plugin) GenerateCode(data *codegen.Data) error {
 						from, to,
 						gqltemplates.UcFirst(from), gqltemplates.UcFirst(to),
 					)
+
 					errored = true
 				}
+
 				return m.types.resolver[from][to][0]
 			},
 			"gtyp": func(from, to string) string {
@@ -370,7 +373,6 @@ func direct(root *{{$root.TypeName}}) map[string]interface{} {
 }
 `,
 	})
-
 	if err != nil {
 		return fmt.Errorf("failed to render generation template: %w", err)
 	}

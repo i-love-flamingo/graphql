@@ -13,30 +13,25 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ '1.23', '1.24', '1.x' ]
+        go: [ 'go.mod', '1.*' ]
     name: Tests
     steps:
       - uses: actions/checkout@v6
       - name: Setup Go
         uses: actions/setup-go@v7
-        env:
-          GOTOOLCHAIN: 'go1.24+auto'
         with:
-          go-version: ${{ matrix.go }}
+          go-version: ${{ matrix.go != 'go.mod' && matrix.go || '' }}
+          go-version-file: ${{ matrix.go == 'go.mod' && 'go.mod' || '' }}
           check-latest: true
       - name: Get dependencies
-        env:
-          GOTOOLCHAIN: 'go1.24+auto'
         run: go get -v -t -d ./...
       - name: Test
-        env:
-          GOTOOLCHAIN: 'go1.24+auto'
         run: CGO_ENABLED=1 go test -race ./...
   static-checks:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ '1.x' ]
+        go: [ '1.*' ]
     name: Static checks
     steps:
       - uses: actions/checkout@v6

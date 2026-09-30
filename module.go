@@ -1,6 +1,7 @@
 package graphql
 
 import (
+	"strings"
 	"time"
 
 	"flamingo.me/dingo"
@@ -58,6 +59,7 @@ type routes struct {
 
 	// configs
 	origins                  flamingoConfig.Slice
+	corsAllowHeaders         flamingoConfig.Slice
 	openCensusTracingEnabled bool
 	introspectionEnabled     bool
 	uploadMaxSize            int64
@@ -70,6 +72,7 @@ func (r *routes) Inject(
 		Exec                     graphql.ExecutableSchema      `inject:",optional"`
 		OperationMiddlewares     []graphql.OperationMiddleware `inject:",optional"`
 		Origins                  flamingoConfig.Slice          `inject:"config:graphql.cors.origins"`
+		CorsAllowHeaders         flamingoConfig.Slice          `inject:"config:graphql.cors.allowHeaders,optional"`
 		IntrospectionEnabled     bool                          `inject:"config:graphql.introspectionEnabled,optional"`
 		OpenCensusTracingEnabled bool                          `inject:"config:graphql.openCensusTracingEnabled,optional"`
 		UploadMaxSize            int64                         `inject:"config:graphql.multipartForm.uploadMaxSize,optional"`
@@ -79,6 +82,7 @@ func (r *routes) Inject(
 	if config != nil {
 		r.exec = config.Exec
 		r.origins = config.Origins
+		r.corsAllowHeaders = config.CorsAllowHeaders
 		r.introspectionEnabled = config.IntrospectionEnabled
 		r.uploadMaxSize = config.UploadMaxSize
 		r.operationMiddlewares = config.OperationMiddlewares
@@ -101,7 +105,15 @@ func (r *routes) Routes(registry *web.RouterRegistry) {
 		panic(err)
 	}
 
-	corsHandler := corsHandler{origins: origins}
+	var extraHeaders []string
+
+	err = r.corsAllowHeaders.MapInto(&extraHeaders)
+	if err != nil {
+		panic(err)
+	}
+
+	allowHeaders := strings.Join(append([]string{"Content-Type"}, extraHeaders...), ", ")
+	corsHandler := corsHandler{origins: origins, allowHeaders: allowHeaders}
 	gqlHandler := func(es graphql.ExecutableSchema) *handler.Server {
 		srv := handler.New(es)
 

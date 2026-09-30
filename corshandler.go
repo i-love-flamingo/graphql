@@ -5,7 +5,8 @@ import (
 )
 
 type corsHandler struct {
-	origins []string
+	origins      []string
+	allowHeaders string
 }
 
 func (h *corsHandler) validateOrigin(origin string) bool {
@@ -24,7 +25,7 @@ func (h *corsHandler) addCorsHeaders(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Set("Access-Control-Allow-Origin", origin)
 		rw.Header().Set("Access-Control-Allow-Credentials", "true")
 		rw.Header().Set("Access-Control-Allow-Methods", "POST")
-		rw.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		rw.Header().Set("Access-Control-Allow-Headers", h.allowHeaders)
 	}
 }
 
